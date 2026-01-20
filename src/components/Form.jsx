@@ -36,7 +36,7 @@ const Form = ({ route, method }) => {
                 if (access && refresh) {
                     localStorage.setItem(ACCESS_TOKEN, access);
                     localStorage.setItem(REFRESH_TOKEN, refresh);
-                    navigate('/');
+                    navigate('/home');
                 }
             } else if (method === 'register' && response.status === 200 && payload.status === 201) {
                 navigate('/login');

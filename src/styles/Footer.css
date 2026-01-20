@@ -1,0 +1,29 @@
+.footer {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 0.5rem 1rem;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: #fff;
+    margin-top: auto;
+}
+
+.footer-content {
+    text-align: center;
+}
+
+.footer-text {
+    margin: 0;
+    font-size: 0.9rem;
+    opacity: 0.9;
+}
+
+.footer-link {
+    color: #fff;
+    text-decoration: underline;
+    transition: opacity 0.3s ease;
+}
+
+.footer-link:hover {
+    opacity: 0.8;
+}
