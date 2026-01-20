@@ -2,11 +2,11 @@ import React from "react";
 import './styles/Global.css'
 import {BrowserRouter, Navigate, Route, Routes} from "react-router";
 import Register from "./components/pages/Register.jsx";
-import ProtectedRoute from "./components/routes/ProtectedRoute.jsx";
+import ProtectedRoute from "./routes/ProtectedRoute.jsx";
 import Home from "./components/pages/Home.jsx";
 import Login from "./components/pages/Login.jsx";
 import NotFound from "./components/pages/NotFound.jsx";
-import PublicRoute from "./components/routes/PublicRoute.jsx";
+import PublicRoute from "./routes/PublicRoute.jsx";
 import Main from "./components/pages/Main.jsx";
 import {LayoutProvider} from "./components/context/LayoutContext.jsx";
 
