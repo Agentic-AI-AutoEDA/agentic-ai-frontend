@@ -1,4 +1,5 @@
 import React from "react";
+import './styles/Global.css'
 import {BrowserRouter, Navigate, Route, Routes} from "react-router";
 import Register from "./pages/Register.jsx";
 import ProtectedRoute from "./components/ProtectedRoute.jsx";
