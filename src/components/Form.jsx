@@ -1,9 +1,9 @@
 import {useState} from 'react';
 import {useNavigate} from "react-router";
 import api from "../api.js";
-import {ACCESS_TOKEN, REFRESH_TOKEN} from "../constants.js";
+import { ACCESS_TOKEN, REFRESH_TOKEN } from "../constants.js";
 
-const Form = ({route, method}) => {
+const Form = ({ route, method }) => {
     const [username, setUsername] = useState('');
     const [password, setPassword] = useState('');
     const [email, setEmail] = useState('');
@@ -20,17 +20,28 @@ const Form = ({route, method}) => {
 
         try {
             const response = await api.post(route, {username, password, email});
-            setMessage(response.data.message);
-            setError(response.data.error);
-            if (method === 'login' && response.data.status === 200) {
-                localStorage.setItem(ACCESS_TOKEN, response.data.data.access);
-                localStorage.setItem(REFRESH_TOKEN, response.data.data.refresh);
-                navigate('/');
-            } else if (method === 'register' && response.data.status === 200) {
+            const payload = response.data;
+            setMessage(payload.message);
+            setError(payload.error);
+            if (method === 'login') {
+                const access = payload?.data?.access;
+                const refresh = payload?.data?.refresh;
+                if (access && refresh) {
+                    localStorage.setItem(ACCESS_TOKEN, access);
+                    localStorage.setItem(REFRESH_TOKEN, refresh);
+                    navigate('/');
+                }
+            } else {
                 navigate('/login');
             }
         } catch (error) {
-            console.log(error);
+            if (error.response && error.response.data) {
+                const payload = error.response.data;
+                setMessage(payload.message || "An error occurred. Please try again.");
+                setError(payload.error);
+            } else {
+                setMessage("Network error. Is the backend running?");
+            }
         } finally {
             setLoading(false);
         }

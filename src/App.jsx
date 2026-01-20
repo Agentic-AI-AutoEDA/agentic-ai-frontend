@@ -5,6 +5,7 @@ import ProtectedRoute from "./components/ProtectedRoute.jsx";
 import Home from "./pages/Home.jsx";
 import Login from "./pages/Login.jsx";
 import NotFound from "./pages/NotFound.jsx";
+import PublicRoute from "./components/PublicRoute.jsx";
 
 function Logout() {
   localStorage.clear();
@@ -20,15 +21,11 @@ function App() {
   return (
     <BrowserRouter>
       <Routes>
-        <Route path='/register' element={<RegisterAndLogout />} />
-        <Route path='/login' element={<Login />} />
+        <Route path="/login" element={<PublicRoute><Login /></PublicRoute>}/>
+        <Route path="/register" element={<PublicRoute><RegisterAndLogout /></PublicRoute>}/>
         <Route path='/logout' element={<Logout />} />
         <Route path='*' element={<NotFound />} />
-        <Route path='/' element={
-          <ProtectedRoute>
-            <Home />
-          </ProtectedRoute>
-        }/>
+        <Route path='/' element={<ProtectedRoute><Home /></ProtectedRoute>}/>
       </Routes>
     </BrowserRouter>
   )
