@@ -1,6 +1,6 @@
 import { Link, useNavigate } from "react-router";
-import "../../styles/PageNotFound.css";
-import {useAuth} from "../../hooks/useAuth.js";
+import "../styles/PageNotFound.css";
+import {useAuth} from "../hooks/useAuth.js";
 
 function NotFound() {
     const navigate = useNavigate();

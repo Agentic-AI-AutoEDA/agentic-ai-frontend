@@ -1,5 +1,5 @@
 import React, {useContext} from 'react';
-import '../../styles/Main.css';
+import '../styles/Main.css';
 import { Link } from 'react-router';
 import {LayoutContext} from "../context/LayoutContext.jsx";
 

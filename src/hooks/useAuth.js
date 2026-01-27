@@ -17,10 +17,13 @@ export const useAuth = () => {
                     localStorage.setItem(ACCESS_TOKEN, response.data.access);
                     setIsAuthorized(true);
                 } else {
+                    localStorage.removeItem(ACCESS_TOKEN);
+                    localStorage.removeItem(REFRESH_TOKEN);
                     setIsAuthorized(false);
                 }
-            } catch (error) {
-                console.log(error);
+            } catch (err) {
+                localStorage.removeItem(ACCESS_TOKEN);
+                localStorage.removeItem(REFRESH_TOKEN);
                 setIsAuthorized(false);
             }
         };

@@ -1,6 +1,6 @@
 import React, { createContext } from 'react';
-import Header from '../Header.jsx';
-import Footer from '../Footer.jsx';
+import Header from '../components/Header.jsx';
+import Footer from '../components/Footer.jsx';
 
 const LayoutContext = createContext();
 
