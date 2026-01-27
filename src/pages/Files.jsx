@@ -5,6 +5,7 @@ import '../styles/Files.css';
 const FileList = () => {
     const [files, setFiles] = useState([]);
     const [loading, setLoading] = useState(true);
+    const [globalError, setGlobalError] = useState(null);
     const [error, setError] = useState(null);
     const [uploading, setUploading] = useState(false);
     const [isNameHovered, setIsNameHovered] = useState(false);
@@ -27,7 +28,7 @@ const FileList = () => {
             const fileData = Array.isArray(response.data.data) ? response.data.data : [];
             setFiles(fileData);
         } catch (err) {
-            setError('Failed to fetch files: ' + err.message);
+            setGlobalError('Failed to fetch files: ' + err.message);
         } finally {
             setLoading(false);
         }
@@ -131,15 +132,29 @@ const FileList = () => {
     const handleView = async (fileId, fileName) => {
         setFullLoading(true);
         setSelectedFileName(fileName);
+        setError(null);
+        setFullData(null);
         try {
             const response = await api.get(`resource/files/${fileId}/read/`, {
                 responseType: 'arraybuffer',
+                validateStatus: () => true,
             });
-            let decoder = new TextDecoder('utf-8');
-            let csvString = decoder.decode(response.data);
+
+            const text = new TextDecoder('utf-8').decode(response.data);
+            try {
+                const json = JSON.parse(text);
+                if (json.status === 413) {
+                    setError('File too large to display (max 10MB).');
+                    setFullData(null);
+                    return;
+                }
+            } catch {
+                // Not JSON response
+            }
+            let csvString = text;
             let parsedData = parseCSV(csvString, ',');
             if (parsedData.columns.length === 1) {
-                decoder = new TextDecoder('latin1');
+                const decoder = new TextDecoder('latin1');
                 csvString = decoder.decode(response.data);
                 parsedData = parseCSV(csvString, ';');
             }
@@ -159,7 +174,7 @@ const FileList = () => {
     };
 
     if (loading) return <p>Loading files...</p>;
-    if (error) return <p>{error}</p>;
+    if (globalError) return <p>{globalError}</p>;
 
     return (
         <div className="file-list">
@@ -213,7 +228,7 @@ const FileList = () => {
                         </table>
                     </div>
 
-                    {previewLoading && <p>Loading preview...</p>}
+                    {previewLoading && <p>Loading file preview...</p>}
                     {preview && (
                         <div
                             className="preview-popup"
@@ -244,11 +259,12 @@ const FileList = () => {
                             </div>
                         </div>
                     )}
+                    {!fullLoading && selectedFileName && error && <p className="error-message">{error}</p>}
                 </>
             )}
 
-            {fullLoading && <p>Loading full content...</p>}
-            {fullData && (
+            {fullLoading && <p>Loading full file...</p>}
+            {fullData && !error && (
                 <div className="full-content">
                     <div className="full-content-header">
                         <h4>{selectedFileName}</h4>
