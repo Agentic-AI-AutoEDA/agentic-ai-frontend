@@ -67,17 +67,18 @@
     font-weight: 600;
 }
 
-.preview-loading {
-    position: fixed;
-    top: 20px;
-    right: 20px;
-    padding: 8px 16px;
-    background: rgba(15, 15, 35, 0.9);
-    border: 1px solid rgba(255,255,255,0.1);
-    border-radius: var(--radius-md);
-    color: rgba(255,255,255,0.8);
-    font-size: 0.9rem;
-    z-index: 999;
+.preview-popup .table-wrapper {
+    max-height: 300px;
+    overflow: auto;
+}
+
+.preview-popup th {
+    background-color: rgba(255,255,255,0.10);
+    font-weight: 600;
+    position: sticky;
+    top: 0;
+    z-index: 6;
+    backdrop-filter: blur(4px);
 }
 
 .full-content {
@@ -106,15 +107,6 @@
 }
 
 .full-content-header button,
-.file-list .btn-secondary {
-    background: transparent;
-    border: 1px solid rgba(255,255,255,0.08);
-    color: rgba(255,255,255,0.95);
-    padding: 6px 10px;
-    border-radius: calc(var(--radius-md) - 4px);
-    box-shadow: none;
-}
-
 .file-list button {
     padding: 8px 12px;
     cursor: pointer;
@@ -126,17 +118,10 @@
     transition: background 0.15s ease, transform 0.08s ease;
 }
 
+.full-content-header button:hover,
 .file-list button:hover {
     background: linear-gradient(135deg, var(--primary-hover), var(--gradient-end));
     transform: translateY(-1px);
-}
-
-.file-list .empty {
-    padding: 24px;
-    text-align: center;
-    color: rgba(255,255,255,0.8);
-    background: rgba(255,255,255,0.02);
-    border-radius: var(--radius-md);
 }
 
 .table-wrapper {
@@ -178,7 +163,7 @@
 }
 
 .file-list th {
-    background-color: rgba(255,255,255,0.05);
+    background-color: rgba(255,255,255,0.10);
     font-weight: 600;
 }
 
@@ -186,7 +171,7 @@
     position: sticky;
     top: 0;
     z-index: 6;
-    background-color: rgba(255,255,255,0.04);
+    background-color: rgba(255,255,255,0.10);
     backdrop-filter: blur(4px);
 }
 
@@ -195,13 +180,20 @@
     padding: 8px 10px;
 }
 
-.preview .table-wrapper,
 .full-content .table-wrapper {
     margin-top: 8px;
+    max-height: calc(80vh - 56px);
 }
 
-.full-content .table-wrapper {
-    max-height: calc(80vh - 56px);
+.file-list th,
+.table-wrapper thead th,
+.preview-popup th {
+    background-color: rgba(255,255,255,0.10);
+    font-weight: 600;
+    position: sticky;
+    top: 0;
+    z-index: 6;
+    backdrop-filter: blur(4px);
 }
 
 .file-list .btn-delete {

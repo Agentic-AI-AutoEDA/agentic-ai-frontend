@@ -4,7 +4,7 @@ import Form from '../components/Form.jsx';
 const Login = () => {
     return (
         <>
-            <Form route="user/login/" method="login"/>
+            <Form route="users/login/" method="login"/>
         </>
     );
 };

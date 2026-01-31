@@ -8,7 +8,7 @@ function PublicRoute({ children }) {
         return <div>Loading...</div>;
     }
 
-    return isLoggedIn ? <Navigate to="/" /> : children;
+    return isLoggedIn ? <Navigate to="/home" replace /> : children;
 }
 
 export default PublicRoute;
