@@ -3,6 +3,8 @@ import {Link, useNavigate} from "react-router";
 import api from "../api.js";
 import { ACCESS_TOKEN, REFRESH_TOKEN } from "../constants.js";
 import '../styles/Form.css'
+import Input from "./common/Input.jsx";
+import Button from "./common/Button .jsx";
 
 const Form = ({ route, method }) => {
     const [username, setUsername] = useState('');
@@ -82,53 +84,43 @@ const Form = ({ route, method }) => {
                             </div>
                         )}
 
-                        <div className="form-group">
-                            <label className="form-label" htmlFor="username">Username</label>
-                            <input
-                                id="username"
-                                type="text"
-                                className={`form-input ${error?.username ? 'error' : ''}`}
-                                placeholder={isLogin ? "Enter your username" : "Choose a username"}
-                                value={username}
-                                onChange={(e) => setUsername(e.target.value)}
-                                required
-                            />
-                            {error?.username && <span className="field-error">{error.username}</span>}
-                        </div>
+                        <Input
+                            id="username"
+                            label="Username"
+                            type="text"
+                            value={username}
+                            onChange={e => setUsername(e.target.value)}
+                            placeholder={isLogin ? "Enter your username" : "Choose a username"}
+                            error={error?.username}
+                        />
 
                         {!isLogin && (
-                            <div className="form-group">
-                                <label className="form-label" htmlFor="email">Email</label>
-                                <input
-                                    id="email"
-                                    type="email"
-                                    className={`form-input ${error?.email ? 'error' : ''}`}
-                                    placeholder="Enter your email"
-                                    value={email}
-                                    onChange={(e) => setEmail(e.target.value)}
-                                    required
-                                />
-                                {error?.email && <span className="field-error">{error.email}</span>}
-                            </div>
-                        )}
-
-                        <div className="form-group">
-                            <label className="form-label" htmlFor="password">Password</label>
-                            <input
-                                id="password"
-                                type="password"
-                                className={`form-input ${error?.password ? 'error' : ''}`}
-                                placeholder={isLogin ? "Enter your password" : "Create a password"}
-                                value={password}
-                                onChange={(e) => setPassword(e.target.value)}
+                            <Input
+                                id="email"
+                                label="Email"
+                                type="email"
+                                value={email}
+                                onChange={e => setEmail(e.target.value)}
+                                placeholder="Enter your email"
+                                error={error?.email}
                                 required
                             />
-                            {error?.password && <span className="field-error">{error.password}</span>}
-                        </div>
+                        )}
 
-                        <button type="submit" className="btn-primary" disabled={loading}>
+                        <Input
+                            id="password"
+                            label="Password"
+                            type="password"
+                            value={password}
+                            onChange={e => setPassword(e.target.value)}
+                            placeholder={isLogin ? "Enter your password" : "Create a password"}
+                            error={error?.password}
+                            required
+                        />
+
+                        <Button type="submit" disabled={loading}>
                             {loading ? <div className="loading-spinner"></div> : buttonText}
-                        </button>
+                        </Button>
                     </form>
 
                     <div className="auth-footer">

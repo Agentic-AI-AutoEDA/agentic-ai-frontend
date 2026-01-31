@@ -1,6 +1,7 @@
 import React, { useEffect, useRef, useState } from 'react';
 import api from '../../api.js';
 import '../../styles/Files.css';
+import Button from "../common/Button .jsx";
 
 const FileList = ({ navigate }) => {
     const [files, setFiles] = useState([]);
@@ -118,13 +119,12 @@ const FileList = ({ navigate }) => {
                     style={{ display: 'none' }}
                     onChange={handleFileChange}
                 />
-                <button
-                    type="button"
+                <Button
                     onClick={handleUploadClick}
                     disabled={uploading}
                 >
                     {uploading ? 'Uploading...' : 'Upload File'}
-                </button>
+                </Button>
                 {uploadError && <p className="error-message">{uploadError}</p>}
             </div>
             <div className="table-wrapper">
@@ -152,9 +152,13 @@ const FileList = ({ navigate }) => {
                             <td>{file.owner_name}</td>
                             <td>{new Date(file.created_at).toLocaleString()}</td>
                             <td>
-                                <button onClick={() => navigate(`file-detail/${encodeURIComponent(file.original_filename)}`)}>View</button>
+                                <Button onClick={() => navigate(`file-detail/${encodeURIComponent(file.original_filename)}`)}>
+                                    View
+                                </Button>
                                 &nbsp;&nbsp;
-                                <button className="btn-delete" onClick={() => handleDelete(file.id)}>Delete</button>
+                                <Button className="btn-delete" onClick={() => handleDelete(file.id)}>
+                                    Delete
+                                </Button>
                             </td>
                         </tr>
                     ))}

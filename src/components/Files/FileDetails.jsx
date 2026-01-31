@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { useParams } from 'react-router';
 import api from '../../api.js';
 import '../../styles/Files.css';
+import Button from "../common/Button .jsx";
 
 const parseCSV = (csvString, delimiter) => {
     const lines = csvString.trim().split('\n');
@@ -109,7 +110,9 @@ const FileDetails = ({ navigate }) => {
         <div className="full-content">
             <div className="full-content-header">
                 <h4>{decodeURIComponent(fileName)}</h4>
-                <button onClick={() => navigate(-1)}>Back</button>
+                <Button onClick={() => navigate(-1)}>
+                    Back
+                </Button>
             </div>
             <div className="table-wrapper">
                 <table>

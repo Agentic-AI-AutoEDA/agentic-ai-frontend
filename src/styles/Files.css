@@ -106,24 +106,6 @@
     color: rgba(255,255,255,0.95);
 }
 
-.full-content-header button,
-.file-list button {
-    padding: 8px 12px;
-    cursor: pointer;
-    background: linear-gradient(135deg, var(--primary-color), var(--gradient-end));
-    color: #fff;
-    border: none;
-    border-radius: calc(var(--radius-md) - 2px);
-    box-shadow: var(--shadow-sm);
-    transition: background 0.15s ease, transform 0.08s ease;
-}
-
-.full-content-header button:hover,
-.file-list button:hover {
-    background: linear-gradient(135deg, var(--primary-hover), var(--gradient-end));
-    transform: translateY(-1px);
-}
-
 .table-wrapper {
     max-height: 100vh;
     overflow: auto;
@@ -194,19 +176,6 @@
     top: 0;
     z-index: 6;
     backdrop-filter: blur(4px);
-}
-
-.file-list .btn-delete {
-    background: #e74c3c;
-    color: #fff;
-    border: none;
-    border-radius: calc(var(--radius-md) - 2px);
-    box-shadow: var(--shadow-sm);
-    transition: background 0.15s ease, transform 0.08s ease;
-}
-
-.file-list .btn-delete:hover {
-    background: #c0392b;
 }
 
 .error-message {
