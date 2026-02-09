@@ -4,7 +4,7 @@ import api from "../api.js";
 import { ACCESS_TOKEN, REFRESH_TOKEN } from "../constants.js";
 import '../styles/Form.css'
 import Input from "./common/Input.jsx";
-import Button from "./common/Button .jsx";
+import Button from "./common/Button.jsx";
 
 const Form = ({ route, method }) => {
     const [username, setUsername] = useState('');

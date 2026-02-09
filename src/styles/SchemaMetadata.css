@@ -1,0 +1,201 @@
+:root {
+    --radius-sm: 4px;
+    --radius-md: 8px;
+    --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.05);
+}
+
+.schema-metadata-container {
+    padding: 20px;
+    color: #ffffff;
+    background: linear-gradient(135deg, #0f0f23 0%, #1a1a3e 50%, #0f0f23 100%);
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    font-family: inherit;
+    position: relative;
+}
+
+.schema-metadata-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 12px;
+    margin-bottom: 10px;
+    color: rgba(255,255,255,0.95);
+}
+
+.schema-metadata-header h4 {
+    margin: 0;
+    font-size: 1.25rem;
+    font-weight: 600;
+}
+
+.schema-content {
+    margin-top: 10px;
+    border: 1px solid rgba(255,255,255,0.08);
+    padding: 12px;
+    color: rgba(255,255,255,0.95);
+    background-color: rgba(255,255,255,0.04);
+    border-radius: var(--radius-md);
+    box-shadow: var(--shadow-sm);
+    overflow: auto;
+    scrollbar-width: none;
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+}
+
+.schema-content::-webkit-scrollbar {
+    display: none;
+}
+
+.schema-display-wrapper {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    height: 100%;
+    flex: 1;
+}
+
+.schema-json-viewer {
+    flex: 1;
+    overflow: auto;
+    border: 1px solid rgba(255,255,255,0.1);
+    border-radius: var(--radius-sm);
+    background-color: rgba(0, 0, 0, 0.3);
+    padding: 12px;
+    scrollbar-width: thin;
+    scrollbar-color: rgba(255,255,255,0.1) transparent;
+}
+
+.schema-json-viewer::-webkit-scrollbar {
+    width: 6px;
+}
+
+.schema-json-viewer::-webkit-scrollbar-track {
+    background: transparent;
+}
+
+.schema-json-viewer::-webkit-scrollbar-thumb {
+    background: rgba(255,255,255,0.1);
+    border-radius: 3px;
+}
+
+.schema-json-viewer::-webkit-scrollbar-thumb:hover {
+    background: rgba(255,255,255,0.2);
+}
+
+.schema-editor-wrapper {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    overflow: hidden;
+}
+
+.ace_editor {
+    flex: 1 !important;
+    border-radius: var(--radius-sm) !important;
+    border: 1px solid rgba(255,255,255,0.1) !important;
+    background-color: rgba(0, 0, 0, 0.5) !important;
+}
+
+.ace-monokai .ace_gutter {
+    background: rgba(0, 0, 0, 0.3);
+    color: rgba(255,255,255,0.4);
+}
+
+.ace-monokai .ace_marker-layer .ace_selection {
+    background: rgba(73, 140, 210, 0.5);
+}
+
+.ace-monokai .ace_cursor {
+    color: rgba(255,255,255,0.8);
+}
+
+.schema-actions {
+    display: flex;
+    gap: 8px;
+    justify-content: flex-start;
+    flex-wrap: wrap;
+}
+
+.schema-status {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 8px 12px;
+    border-radius: var(--radius-sm);
+    font-size: 0.875rem;
+}
+
+.schema-status.loading {
+    background-color: rgba(173, 216, 230, 0.1);
+    color: #87ceeb;
+}
+
+.schema-status.success {
+    background-color: rgba(144, 238, 144, 0.1);
+    color: #90ee90;
+}
+
+.schema-status.error {
+    background-color: rgba(255, 99, 71, 0.1);
+    color: #ff6347;
+}
+
+.schema-error-message {
+    background-color: rgba(255, 99, 71, 0.1);
+    border: 1px solid rgba(255, 99, 71, 0.3);
+    color: #ff6347;
+    padding: 12px;
+    border-radius: var(--radius-sm);
+    margin-bottom: 12px;
+}
+
+.schema-editor-label {
+    font-size: 0.875rem;
+    color: rgba(255,255,255,0.7);
+    font-weight: 500;
+    margin-bottom: 4px;
+}
+
+.schema-button-group {
+    display: flex;
+    gap: 8px;
+    justify-content: flex-start;
+    margin-top: 12px;
+}
+
+.loading-spinner {
+    display: inline-block;
+    width: 16px;
+    height: 16px;
+    border: 2px solid rgba(255,255,255,0.2);
+    border-top: 2px solid rgba(255,255,255,0.8);
+    border-radius: 50%;
+    animation: spin 0.6s linear infinite;
+}
+
+@keyframes spin {
+    to {
+        transform: rotate(360deg);
+    }
+}
+
+.schema-json-viewer {
+    overflow-y: auto;
+    max-height: 400px;
+    padding: 10px;
+    background-color: #1a1a1a;
+    border-radius: 4px;
+}
+
+.schema-json-viewer pre {
+    margin: 0;
+    color: #90ee90;
+    font-size: 0.875rem;
+    line-height: 1.5;
+}
+

@@ -178,6 +178,10 @@
     backdrop-filter: blur(4px);
 }
 
+.file-list table td:last-child {
+    text-align: center;
+}
+
 .error-message {
     color: #ff4d4f;
     background: rgba(20, 10, 30, 0.85);

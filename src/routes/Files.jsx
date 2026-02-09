@@ -1,7 +1,7 @@
 import React from 'react';
 import {Route, Routes, useNavigate} from "react-router";
-import FileList from "../components/Files/FileList.jsx";
-import FileDetails from "../components/Files/FileDetails.jsx";
+import FileList from "../components/files/FileList.jsx";
+import FileDetails from "../components/files/FileDetails.jsx";
 
 const Files = () => {
     const navigate = useNavigate();

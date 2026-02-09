@@ -1,7 +1,7 @@
 import React from 'react';
 import { Outlet, useNavigate } from 'react-router';
 import '../styles/Home.css';
-import Button from "../components/common/Button .jsx";
+import Button from "../components/common/Button.jsx";
 
 const SidebarNavigationLayout = () => {
     const navigate = useNavigate();
@@ -12,7 +12,7 @@ const SidebarNavigationLayout = () => {
                 <aside className="sidebar">
                     <div className="sidebar-top">
                         <Button className="btn-sidebar" onClick={() => navigate('/files')}>Data Source</Button>
-                        <Button className="btn-sidebar" onClick={() => navigate('/configure-agent')}>Configure Agent</Button>
+                        <Button className="btn-sidebar" onClick={() => navigate('/agents')}>Configure Agent</Button>
                         <Button className="btn-sidebar" onClick={() => navigate('/run-analysis')}>Run Analysis</Button>
                     </div>
                     <div className="sidebar-bottom">

@@ -1,7 +1,7 @@
 import React, { useEffect, useRef, useState } from 'react';
 import api from '../../api.js';
 import '../../styles/Files.css';
-import Button from "../common/Button .jsx";
+import Button from "../common/Button.jsx";
 
 const FileList = ({ navigate }) => {
     const [files, setFiles] = useState([]);

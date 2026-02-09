@@ -9,9 +9,10 @@ import NotFound from "./pages/NotFound.jsx";
 import PublicRoute from "./routes/PublicRoute.jsx";
 import Main from "./pages/Main.jsx";
 import { LayoutProvider } from "./context/LayoutContext.jsx";
-import Profile from "./pages/profile.jsx";
-import Files from "./pages/Files.jsx";
+import Profile from "./pages/Profile.jsx";
+import Files from "./routes/Files.jsx";
 import SidebarNavigationLayout from "./layout/SidebarNavigationLayout.jsx";
+import Agents from "./routes/Agents.jsx";
 
 function Logout() {
   localStorage.clear();
@@ -34,6 +35,7 @@ function App() {
             <Route element={<ProtectedRoute><SidebarNavigationLayout /></ProtectedRoute>}>
               <Route path="/home" element={<Home />} />
               <Route path="/files/*" element={<Files />} />
+              <Route path="/agents/*" element={<Agents />} />
               <Route path="/profile" element={<Profile />} />
             </Route>
             <Route path="/logout" element={<Logout />} />

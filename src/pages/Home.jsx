@@ -5,7 +5,6 @@ const Home = () => (
     <div className="center-content">
         <section className="welcome-section">
             <h1 className="page-title">
-                <span className="title-icon">🎯</span>
                 Welcome to Agentic AI EDA
             </h1>
             <p className="page-description">
