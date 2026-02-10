@@ -13,7 +13,6 @@ const Main = () => {
                     <div className="hero-glow"></div>
                     <div className="hero-content">
                         <div className="hero-badge">
-                            <span className="badge-dot"></span>
                             AI-Powered Analytics Platform
                         </div>
                         <h1 className="hero-title">
