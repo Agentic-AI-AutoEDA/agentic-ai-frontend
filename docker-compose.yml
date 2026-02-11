@@ -13,3 +13,9 @@ services:
       - NODE_ENV=development
     stdin_open: true
     tty: true
+    networks:
+      - agentic-ai-network
+
+networks:
+  agentic-ai-network:
+    external: true
