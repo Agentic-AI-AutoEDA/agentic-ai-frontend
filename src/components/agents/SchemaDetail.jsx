@@ -85,9 +85,22 @@ const SchemaDetail = ({ navigate }) => {
     const handleConfirm = async () => {
         setConfirming(true);
         setMessage('');
+        setError(null);
         try {
             await api.post(`agents/${agentId}/metadata/schema/confirm/`);
-            await api.post(`agents/${agentId}/metadata/semantic/generate/`);
+            try {
+                const semanticResponse = await api.get(`agents/${agentId}/metadata/semantic/`);
+                const semanticData = semanticResponse.data.data || semanticResponse.data;
+                if (!semanticData || Object.keys(semanticData).length === 0) {
+                    await api.post(`agents/${agentId}/metadata/semantic/generate/`);
+                }
+            } catch (err) {
+                if (err.response?.status === 404) {
+                    await api.post(`agents/${agentId}/metadata/semantic/generate/`);
+                } else {
+                    await api.post(`agents/${agentId}/metadata/semantic/generate/`);
+                }
+            }
             navigate(`/agents/semantic/${agentId}`);
         } catch (err) {
             const errorMessage = err.response?.data?.message || err.response?.data?.error || 'Failed to confirm schema';
