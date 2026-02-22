@@ -284,5 +284,4 @@
     text-align: center;
 }
 
-
-
+.empty-row-cell { text-align: center; padding: 18px 0; color: rgba(255,255,255,0.7); }

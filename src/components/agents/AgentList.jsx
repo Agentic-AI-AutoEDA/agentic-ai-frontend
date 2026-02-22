@@ -63,7 +63,7 @@ const AgentList = ({ navigate }) => {
                     <tbody>
                     {agents.length === 0 ? (
                         <tr>
-                            <td colSpan="6" style={{ textAlign: 'center' }}>
+                            <td colSpan="6" className="empty-row-cell">
                                 No agents found. Create your first agent!
                             </td>
                         </tr>

@@ -198,3 +198,5 @@
     margin-right: 8px;
     font-size: 1.1em;
 }
+
+.hidden-input { display: none !important; }

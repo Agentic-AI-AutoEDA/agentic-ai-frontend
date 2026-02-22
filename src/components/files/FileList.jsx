@@ -116,7 +116,7 @@ const FileList = ({ navigate }) => {
                     type="file"
                     name="file"
                     ref={fileInputRef}
-                    style={{ display: 'none' }}
+                    className="hidden-input"
                     onChange={handleFileChange}
                 />
                 <Button

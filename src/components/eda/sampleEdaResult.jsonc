@@ -1,0 +1,300 @@
+// Sample EDA response
+{
+  // UUID of the EDA Job record
+  "id": "sample",
+  // job status
+  "status": "completed",
+  // result object
+  "result": {
+    // plain-English goal supplied by user (optional)
+    "goal": "Understand pricing drivers and data quality issues",
+    "dataset_context": {
+      // domain of the dataset (e.g. e-commerce, finance)
+      "domain": "automotive",
+      // short description of the dataset/source
+      "description": "Used car listings scraped from major marketplaces across multiple cities. Includes specs, pricing and seller info."
+    },
+
+    // one of: general|regression|classification|clustering|time_series
+    "task_type": "general",
+    // resolved target column (optional)
+    "target_column": "Price",
+    // resolved time column if any (optional)
+    "time_column": "ListedDate",
+
+    // ── dataset summary ──
+    "row_count": 2059,
+    "column_count": 20,
+
+    // ── task_metrics (keys vary by task_type) ──
+    "task_metrics": {
+      // echoes resolved task type
+      "task_type": "general",
+
+      // --- regression example fields ---
+      // target column name
+      "target_column": "Price",
+      // basic target stats
+      "target_stats": {
+        "mean": 1702991.696455,
+        "std": 2419880.635434,
+        "skewness": 4.965143,
+        "min": 49000,
+        "max": 35000000,
+        "null_count": 0
+      },
+      // feature -> correlation with target (sorted by abs value on backend)
+      "feature_target_correlations": {
+        "Length": 0.556741,
+        "Width": 0.563996,
+        "Fuel Tank Capacity": 0.584631,
+        "Year": 0.3114
+      },
+
+      // --- classification example fields ---
+      // class distribution: label -> {count, ratio}
+      "class_distribution": {
+        "Yes": { "count": 1200, "ratio": 0.583 },
+        "No": { "count": 859, "ratio": 0.417 }
+      },
+      "num_classes": 2,
+      // majority/minority ratio
+      "imbalance_ratio": 1.398,
+      // whether heuristic flags imbalance
+      "is_imbalanced": false,
+      // unique class labels
+      "target_classes": ["Yes", "No"],
+
+      // --- clustering examples ---
+      "feature_variances": { "Price": 5839200000.12, "Kilometer": 3290000000.34 },
+      "feature_ranges": { "Price": 34951000, "Kilometer": 2000000 },
+
+      // --- time series fields ---
+      "time_column": "ListedDate",
+      "time_coverage": {
+        "start": "2022-01-01T00:00:00Z",
+        "end": "2023-12-31T23:59:59Z",
+        "range_days": 730,
+        "record_count": 2059,
+        "median_gap_hours": 24.0,
+        "missing_timestamps": 0
+      },
+      "stationarity_hint": {
+        "rolling_mean_range": 150000.0,
+        "rolling_std_range": 1200000.0
+      }
+    },
+
+    // ── univariate (grouped by dtype) ──
+    "univariate": {
+      "numeric": {
+        // per-column numeric stats
+        "Year": {
+          "mean": 2016.425449,
+          "median": 2017,
+          "std": 3.363564,
+          "min": 1988,
+          "max": 2022,
+          "skewness": -0.840685,
+          "kurtosis": 2.926643,
+          "q1": 2014,
+          "q3": 2019,
+          "iqr": 5,
+          "outlier_count": 7,
+          "outlier_ratio": 0.0034,
+          "zero_count": 0,
+          // histogram as array of {bin_start, bin_end, count}
+          "histogram": [
+            { "bin_start": 1988, "bin_end": 1992, "count": 3 },
+            { "bin_start": 1992, "bin_end": 1996, "count": 5 },
+            { "bin_start": 1996, "bin_end": 2000, "count": 10 },
+            { "bin_start": 2000, "bin_end": 2004, "count": 25 },
+            { "bin_start": 2004, "bin_end": 2008, "count": 150 }
+          ]
+        },
+
+        "Price": {
+          "mean": 1702991.696455,
+          "median": 825000,
+          "std": 2419880.635434,
+          "min": 49000,
+          "max": 35000000,
+          "skewness": 4.965143,
+          "kurtosis": 40.298155,
+          "q1": 484999,
+          "q3": 1925000,
+          "iqr": 1440001,
+          "outlier_count": 215,
+          "outlier_ratio": 0.10442,
+          "zero_count": 0,
+          "histogram": [
+            { "bin_start": 49000, "bin_end": 1214033.333333, "count": 1281 },
+            { "bin_start": 1214033.333333, "bin_end": 2379066.666667, "count": 350 },
+            { "bin_start": 2379066.666667, "bin_end": 3544100, "count": 170 }
+          ]
+        },
+
+        "Kilometer": {
+          "mean": 54224.714424,
+          "median": 50000,
+          "std": 57361.721314,
+          "min": 0,
+          "max": 2000000,
+          "skewness": 20.980719,
+          "kurtosis": 669.608633,
+          "q1": 29000,
+          "q3": 72000,
+          "iqr": 43000,
+          "outlier_count": 36,
+          "outlier_ratio": 0.017484,
+          "zero_count": 1,
+          "histogram": [
+            { "bin_start": 0, "bin_end": 66666.666667, "count": 1419 },
+            { "bin_start": 66666.666667, "bin_end": 133333.333333, "count": 601 }
+          ]
+        }
+      }, // or { "status": "all_null" }
+
+      "categorical": {
+        "Make": {
+          "unique_count": 33,
+          "top_values": [
+            { "value": "Maruti Suzuki", "count": 440, "ratio": 0.213696 },
+            { "value": "Hyundai", "count": 349, "ratio": 0.1695 }
+          ],
+          "mode": "Maruti Suzuki",
+          "mode_frequency": 440,
+          "entropy": 3.806082
+        },
+
+        "Fuel Type": {
+          "unique_count": 9,
+          "top_values": [
+            { "value": "Diesel", "count": 1049, "ratio": 0.509471 },
+            { "value": "Petrol", "count": 942, "ratio": 0.457504 }
+          ],
+          "mode": "Diesel",
+          "mode_frequency": 1049,
+          "entropy": 1.220802
+        }
+      }, // or { "status": "all_null" }
+
+      "datetime": {
+        "ListedDate": {
+          "min": "2022-01-01T00:00:00Z",
+          "max": "2023-12-31T23:59:59Z",
+          "range_days": 730,
+          "unique_count": 2059
+        }
+      }
+      // or { "status": "all_null" }
+    },
+
+    // ── bivariate (cross-column relationships) ──
+    "bivariate": {
+      "correlation_matrix": {
+        "Year": { "Year": 1, "Price": 0.3114, "Width": 0.195493 },
+        "Price": { "Year": 0.3114, "Price": 1, "Width": 0.563996 },
+        "Width": { "Year": 0.195493, "Price": 0.563996, "Width": 1 }
+      },
+      // pairs of highly correlated columns
+      "high_correlations": [
+        { "column_1": "Length", "column_2": "Fuel Tank Capacity", "correlation": 0.81301, "strength": "moderate" },
+        { "column_1": "Length", "column_2": "Width", "correlation": 0.807054, "strength": "moderate" }
+      ],
+      // categorical -> numeric group stats
+      "categorical_numeric": [
+        {
+          "categorical_column": "Fuel Type",
+          "numeric_column": "Price",
+          "group_stats": [
+            { "group": "Diesel", "mean": 2101848.380362, "median": 1380000, "std": 2224040.645129, "count": 1049 },
+            { "group": "Petrol", "mean": 1322041.350318, "median": 595000, "std": 2597128.455779, "count": 942 }
+          ]
+        }
+      ]
+    },
+
+    // ── temporal (time-series) ── None if no datetime cols)
+    "temporal": {
+      "time_columns": {
+        "ListedDate": {
+          "record_count_by_period": {
+            "monthly": [
+              { "period": "2022-01", "count": 60 },
+              { "period": "2022-02", "count": 55 },
+              { "period": "2023-12", "count": 82 }
+            ]
+          },
+          "trends": {
+            "Price": [
+              { "period": "2022-01-01", "mean": 850000, "sum": 51000000, "count": 60 },
+              { "period": "2022-02-01", "mean": 870000, "sum": 47850000, "count": 55 }
+            ],
+            "Kilometer": [
+              { "period": "2022-01-01", "mean": 45000, "sum": 2700000, "count": 60 }
+            ]
+          }
+        }
+      }
+    },
+
+    // ── data quality diagnostics ──
+    "quality": {
+      "total_rows": 2059,
+      "total_cells": 41180,
+      "total_missing": 745,
+      "total_missing_ratio": 0.018091,
+      "duplicate_row_count": 0,
+      "duplicate_row_ratio": 0,
+      "missing_per_column": {
+        "Width": { "null_count": 64, "null_ratio": 0.031083 },
+        "Engine": { "null_count": 80, "null_ratio": 0.038854 }
+      },
+      "outlier_summary": {
+        "Price": { "outlier_count": 215, "outlier_ratio": 0.10442, "lower_bound": -1675002.5, "upper_bound": 4085001.5 },
+        "Width": { "outlier_count": 182, "outlier_ratio": 0.091228, "lower_bound": 1490.25, "upper_bound": 2036.25 }
+      },
+      "constant_columns": [],
+      "high_cardinality_columns": [ "Location" ]
+    },
+
+    // ── LLM-generated insights ──
+    // category: distribution|correlation|outlier|missing_data|temporal|class_imbalance|multicollinearity|target_analysis|general
+    // severity: info|warning|critical
+    "insights": [
+      {
+        "id": "insight_1",
+        "category": "distribution",
+        "severity": "warning",
+        "title": "Highly Skewed Price Distribution",
+        "description": "Price distribution is heavily right-skewed with extreme high-value outliers.",
+        "affected_columns": [ "Price" ],
+        "recommendation": "Apply log transform or cap extremes before modeling."
+      },
+      {
+        "id": "insight_2",
+        "category": "correlation",
+        "severity": "warning",
+        "title": "Multicollinearity Among Dimensions",
+        "description": "Length, Width, and Fuel Tank Capacity show high pairwise correlations.",
+        "affected_columns": [ "Length", "Width", "Fuel Tank Capacity" ],
+        "recommendation": "Consider dimensionality reduction or feature selection."
+      }
+    ],
+
+    // ── chart recommendations ──
+    // chart_type: histogram|bar|scatter|line|box|heatmap|pie|area|violin
+    // priority: high|medium|low
+    "charts": [
+      { "id": "chart_1", "chart_type": "histogram", "title": "Distribution of Vehicle Prices", "description": "Histogram of Price", "x_axis": "Price", "y_axis": null, "group_by": null, "priority": "high" },
+      { "id": "chart_2", "chart_type": "box", "title": "Price by Fuel Type", "description": "Box plot of Price grouped by Fuel Type", "x_axis": "Fuel Type", "y_axis": "Price", "group_by": null, "priority": "high" },
+      { "id": "chart_3", "chart_type": "scatter", "title": "Price vs Length", "description": "Scatter of Price vs Length", "x_axis": "Length", "y_axis": "Price", "group_by": null, "priority": "high" },
+      { "id": "chart_4", "chart_type": "heatmap", "title": "Correlation Matrix", "description": "Pairwise correlations", "x_axis": null, "y_axis": null, "group_by": null, "priority": "high" },
+      { "id": "chart_5", "chart_type": "bar", "title": "Count of Vehicles by Fuel Type", "description": "Counts by Fuel Type", "x_axis": "Fuel Type", "y_axis": null, "group_by": null, "priority": "medium" },
+      { "id": "chart_6", "chart_type": "line", "title": "Price Trend Over Time", "description": "Monthly average price", "x_axis": "ListedDate", "y_axis": "Price", "group_by": null, "priority": "medium" }
+    ]
+  }
+}
+
+

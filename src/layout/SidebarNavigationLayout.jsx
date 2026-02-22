@@ -13,7 +13,7 @@ const SidebarNavigationLayout = () => {
                     <div className="sidebar-top">
                         <Button className="btn-sidebar" onClick={() => navigate('/files')}>Data Source</Button>
                         <Button className="btn-sidebar" onClick={() => navigate('/agents')}>Configure Agent</Button>
-                        <Button className="btn-sidebar" onClick={() => navigate('/run-analysis')}>Run Analysis</Button>
+                        <Button className="btn-sidebar" onClick={() => navigate('/eda')}>EDA</Button>
                     </div>
                     <div className="sidebar-bottom">
                         <Button className="btn-sidebar" onClick={() => navigate('/profile')}>Profile</Button>

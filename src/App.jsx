@@ -13,6 +13,7 @@ import Profile from "./pages/Profile.jsx";
 import Files from "./routes/Files.jsx";
 import SidebarNavigationLayout from "./layout/SidebarNavigationLayout.jsx";
 import Agents from "./routes/Agents.jsx";
+import RunAnalysis from "./routes/RunAnalysis.jsx";
 
 function Logout() {
   localStorage.clear();
@@ -36,6 +37,7 @@ function App() {
               <Route path="/home" element={<Home />} />
               <Route path="/files/*" element={<Files />} />
               <Route path="/agents/*" element={<Agents />} />
+              <Route path="/eda/*" element={<RunAnalysis />} />
               <Route path="/profile" element={<Profile />} />
             </Route>
             <Route path="/logout" element={<Logout />} />
