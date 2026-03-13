@@ -1,24 +1,28 @@
 import React, { useState } from 'react';
 
 const SEVERITY_CONFIG = {
-    critical: { className: 'eda-severity-critical', icon: '\ud83d\udd34', label: 'Critical' },
-    high:     { className: 'eda-severity-critical', icon: '\ud83d\udfe0', label: 'High' },
-    warning:  { className: 'eda-severity-warning',  icon: '\ud83d\udfe1', label: 'Warning' },
-    info:     { className: 'eda-severity-info',      icon: '\ud83d\udd35', label: 'Info' },
+    critical: { className: 'eda-severity-critical', icon: '🔴', label: 'Critical' },
+    high:     { className: 'eda-severity-high',     icon: '🟠', label: 'High' },
+    medium:   { className: 'eda-severity-warning',  icon: '🟡', label: 'Medium' },
+    low:      { className: 'eda-severity-info',     icon: '🔵', label: 'Low' },
+    warning:  { className: 'eda-severity-warning',  icon: '🟡', label: 'Warning' },
+    info:     { className: 'eda-severity-info',     icon: '🔵', label: 'Info' },
 };
 
 const CATEGORY_LABELS = {
-    distribution: 'Distribution',
-    correlation: 'Correlation',
-    outlier: 'Outlier',
-    missing_data: 'Missing Data',
-    temporal: 'Temporal',
-    class_imbalance: 'Class Imbalance',
+    distribution:      'Distribution',
+    correlation:       'Correlation',
+    outlier:           'Outlier',
+    missing_data:      'Missing Data',
+    temporal:          'Temporal',
+    class_imbalance:   'Class Imbalance',
     multicollinearity: 'Multicollinearity',
-    target_analysis: 'Target Analysis',
-    general: 'General',
+    target_analysis:   'Target Analysis',
+    data_leakage:      'Data Leakage',
+    general:           'General',
 };
 
+// InsightCard — displays a single insight
 const InsightCard = ({ insight }) => {
     const [expanded, setExpanded] = useState(false);
     // Safely read fields with defaults to avoid crashes on malformed insight objects
@@ -37,6 +41,9 @@ const InsightCard = ({ insight }) => {
                     <span className="eda-category-badge">
                         {CATEGORY_LABELS[(insight && insight.category) || 'general'] || (insight && insight.category) || 'General'}
                     </span>
+                    {insight && insight.id && (
+                        <span className="eda-column-tag eda-insight-id-tag">{insight.id}</span>
+                    )}
                 </div>
                 <h4 className="eda-insight-title">{title}</h4>
             </div>
@@ -71,7 +78,7 @@ const InsightCard = ({ insight }) => {
 const EdaInsights = ({ insights }) => {
     const [filter, setFilter] = useState('all');
 
-    // Normalize insights to an array to avoid crashes when backend returns null/undefined/object
+    // Normalize insights to an array
     const safeInsights = Array.isArray(insights) ? insights.filter(Boolean) : (insights && typeof insights === 'object' ? [insights] : []);
 
     if (!safeInsights || safeInsights.length === 0) {
@@ -88,35 +95,43 @@ const EdaInsights = ({ insights }) => {
         : safeInsights.filter(i => (i && i.severity) === filter);
 
     const counts = {
-        all: safeInsights.length,
+        all:      safeInsights.length,
         critical: safeInsights.filter(i => i && i.severity === 'critical').length,
-        high: safeInsights.filter(i => i && i.severity === 'high').length,
-        warning: safeInsights.filter(i => i && i.severity === 'warning').length,
-        info: safeInsights.filter(i => i && i.severity === 'info').length,
+        high:     safeInsights.filter(i => i && i.severity === 'high').length,
+        medium:   safeInsights.filter(i => i && i.severity === 'medium').length,
+        low:      safeInsights.filter(i => i && i.severity === 'low').length,
+        warning:  safeInsights.filter(i => i && i.severity === 'warning').length,
+        info:     safeInsights.filter(i => i && i.severity === 'info').length,
     };
 
     return (
         <div className="eda-section eda-insights">
             <h3 className="eda-section-title">Insights ({safeInsights.length})</h3>
 
-            <div className="eda-insight-filters">
-                {Object.entries(counts).map(([key, count]) => (
-                    count > 0 && (
-                        <button
-                            key={key}
-                            className={`eda-filter-btn ${filter === key ? 'active' : ''}`}
-                            onClick={() => setFilter(key)}
-                        >
-                            {key === 'all' ? 'All' : (SEVERITY_CONFIG[key]?.icon || '') + ' ' + key.charAt(0).toUpperCase() + key.slice(1)} ({count})
-                        </button>
-                    )
-                ))}
-            </div>
+            <div className="eda-insights-body">
+                <div className="eda-insight-filters">
+                    {Object.entries(counts).map(([key, count]) => (
+                        count > 0 && (
+                            <button
+                                key={key}
+                                className={`eda-filter-btn ${filter === key ? 'active' : ''}`}
+                                onClick={() => setFilter(key)}
+                            >
+                                {key === 'all' ? 'All' : (SEVERITY_CONFIG[key]?.icon || '') + ' ' + key.charAt(0).toUpperCase() + key.slice(1)} ({count})
+                            </button>
+                        )
+                    ))}
+                </div>
 
-            <div className="eda-insight-list">
-                {filtered.map((insight, idx) => (
-                    <InsightCard key={insight && insight.id ? insight.id : `insight-${idx}`} insight={insight} />
-                ))}
+                {/* Insight cards */}
+                <div className="eda-insight-list">
+                    {filtered.map((insight, idx) => (
+                        <InsightCard
+                            key={insight?.id ?? `insight-${idx}`}
+                            insight={insight}
+                        />
+                    ))}
+                </div>
             </div>
         </div>
     );

@@ -1,300 +1,1093 @@
-// Sample EDA response
+// Sample EDA response — updated schema (new agentic pipeline output)
 {
-  // UUID of the EDA Job record
-  "id": "sample",
-  // job status
+  "eda_job_id": "sample-uuid-1234",
   "status": "completed",
-  // result object
   "result": {
-    // plain-English goal supplied by user (optional)
-    "goal": "Understand pricing drivers and data quality issues",
-    "dataset_context": {
-      // domain of the dataset (e.g. e-commerce, finance)
-      "domain": "automotive",
-      // short description of the dataset/source
-      "description": "Used car listings scraped from major marketplaces across multiple cities. Includes specs, pricing and seller info."
-    },
 
-    // one of: general|regression|classification|clustering|time_series
-    "task_type": "general",
-    // resolved target column (optional)
-    "target_column": "Price",
-    // resolved time column if any (optional)
-    "time_column": "ListedDate",
-
-    // ── dataset summary ──
-    "row_count": 2059,
-    "column_count": 20,
-
-    // ── task_metrics (keys vary by task_type) ──
-    "task_metrics": {
-      // echoes resolved task type
-      "task_type": "general",
-
-      // --- regression example fields ---
-      // target column name
-      "target_column": "Price",
-      // basic target stats
-      "target_stats": {
-        "mean": 1702991.696455,
-        "std": 2419880.635434,
-        "skewness": 4.965143,
-        "min": 49000,
-        "max": 35000000,
-        "null_count": 0
+    // ── 1. summary ──────────────────────────────────────────────────────────
+    "summary": {
+      "goal": "Understand pricing drivers and data quality issues",
+      "dataset_context": {
+        "domain": "automotive",
+        "description": "Used car listings scraped from major marketplaces across multiple cities. Includes specs, pricing and seller info."
       },
-      // feature -> correlation with target (sorted by abs value on backend)
-      "feature_target_correlations": {
-        "Length": 0.556741,
-        "Width": 0.563996,
-        "Fuel Tank Capacity": 0.584631,
-        "Year": 0.3114
-      },
+      "task": {
+        "task_type": "regression",
+        "target_column": "Price",
+        "time_column": null,
+        "ready_for_modeling": true,
+        "task_metrics": {
+          "task_type": "regression",
 
-      // --- classification example fields ---
-      // class distribution: label -> {count, ratio}
-      "class_distribution": {
-        "Yes": { "count": 1200, "ratio": 0.583 },
-        "No": { "count": 859, "ratio": 0.417 }
-      },
-      "num_classes": 2,
-      // majority/minority ratio
-      "imbalance_ratio": 1.398,
-      // whether heuristic flags imbalance
-      "is_imbalanced": false,
-      // unique class labels
-      "target_classes": ["Yes", "No"],
+          // ── cross-cutting (all task types) ──
+          "ignored_columns": [],
+          "high_leakage_columns": [],
+          "sensitive_columns": [{
+            "name": "Owner Name",
+            "sensitivity": "pii"
+          }],
+          "auxiliary_columns": ["ListedDate"],
 
-      // --- clustering examples ---
-      "feature_variances": { "Price": 5839200000.12, "Kilometer": 3290000000.34 },
-      "feature_ranges": { "Price": 34951000, "Kilometer": 2000000 },
+          // ── supervised tasks ──
+          "target_column": "Price",
+          "target_semantic": {
+            "description": "Listed selling price of the used vehicle in INR.",
+            "business_category": "pricing",
+            "sensitivity": "none",
+            "leakage_risk": "none",
+            "target_confidence": 0.97,
+            "time_dependent": false
+          },
 
-      // --- time series fields ---
-      "time_column": "ListedDate",
-      "time_coverage": {
-        "start": "2022-01-01T00:00:00Z",
-        "end": "2023-12-31T23:59:59Z",
-        "range_days": 730,
-        "record_count": 2059,
-        "median_gap_hours": 24.0,
-        "missing_timestamps": 0
-      },
-      "stationarity_hint": {
-        "rolling_mean_range": 150000.0,
-        "rolling_std_range": 1200000.0
-      }
-    },
+          // ── regression only ──
+          "target_stats": {
+            "mean": 1702991.70,
+            "std": 2419880.64,
+            "cv": 1.42,
+            "variance": 5855943736787.0,
+            "skewness": 4.965143,
+            "skew_category": "heavy_right",
+            "kurtosis": 40.30,
+            "min": 49000,
+            "max": 35000000,
+            "range": 34951000,
+            "p25": 484999,
+            "p50": 825000,
+            "p75": 1925000,
+            "iqr": 1440001,
+            "zero_count": 0,
+            "zero_ratio": 0.0,
+            "outlier_count": 215,
+            "outlier_ratio": 0.10442,
+            "outlier_severity_index": 0.82,
+            "distribution_shape_flags": ["right_skewed", "heavy_tailed", "outliers_present"],
+            "histogram": [
+              {
+                "bin_start": 49000,
+                "bin_end": 1214033.33,
+                "count": 1281
+              },
+              {
+                "bin_start": 1214033.33,
+                "bin_end": 2379066.67,
+                "count": 350
+              },
+              { "bin_start": 2379066.67, "bin_end": 3544100,    "count": 170  }
+            ],
+            "null_count": 0, "null_ratio": 0.0,
+            "dominant_ratio": null,
+            "sample": ["825000", "1250000", "499000", "3200000"]
+          },
+          "feature_target_correlations": {
+            "Fuel Tank Capacity": 0.584631,
+            "Width": 0.563996,
+            "Length": 0.556741,
+            "Year": 0.3114
+          },
 
-    // ── univariate (grouped by dtype) ──
-    "univariate": {
-      "numeric": {
-        // per-column numeric stats
-        "Year": {
-          "mean": 2016.425449,
-          "median": 2017,
-          "std": 3.363564,
-          "min": 1988,
-          "max": 2022,
-          "skewness": -0.840685,
-          "kurtosis": 2.926643,
-          "q1": 2014,
-          "q3": 2019,
-          "iqr": 5,
-          "outlier_count": 7,
-          "outlier_ratio": 0.0034,
-          "zero_count": 0,
-          // histogram as array of {bin_start, bin_end, count}
-          "histogram": [
-            { "bin_start": 1988, "bin_end": 1992, "count": 3 },
-            { "bin_start": 1992, "bin_end": 1996, "count": 5 },
-            { "bin_start": 1996, "bin_end": 2000, "count": 10 },
-            { "bin_start": 2000, "bin_end": 2004, "count": 25 },
-            { "bin_start": 2004, "bin_end": 2008, "count": 150 }
-          ]
-        },
+          // ── classification only (null for regression) ──
+          "class_distribution": null,
+          "num_classes": null,
+          "target_classes": [],
+          "imbalance_ratio": null,
+          "is_imbalanced": false,
 
-        "Price": {
-          "mean": 1702991.696455,
-          "median": 825000,
-          "std": 2419880.635434,
-          "min": 49000,
-          "max": 35000000,
-          "skewness": 4.965143,
-          "kurtosis": 40.298155,
-          "q1": 484999,
-          "q3": 1925000,
-          "iqr": 1440001,
-          "outlier_count": 215,
-          "outlier_ratio": 0.10442,
-          "zero_count": 0,
-          "histogram": [
-            { "bin_start": 49000, "bin_end": 1214033.333333, "count": 1281 },
-            { "bin_start": 1214033.333333, "bin_end": 2379066.666667, "count": 350 },
-            { "bin_start": 2379066.666667, "bin_end": 3544100, "count": 170 }
-          ]
-        },
+          // ── clustering only (null for regression) ──
+          "feature_variances": null,
+          "feature_ranges": null,
+          "feature_complexity_scores": null,
 
-        "Kilometer": {
-          "mean": 54224.714424,
-          "median": 50000,
-          "std": 57361.721314,
-          "min": 0,
-          "max": 2000000,
-          "skewness": 20.980719,
-          "kurtosis": 669.608633,
-          "q1": 29000,
-          "q3": 72000,
-          "iqr": 43000,
-          "outlier_count": 36,
-          "outlier_ratio": 0.017484,
-          "zero_count": 1,
-          "histogram": [
-            { "bin_start": 0, "bin_end": 66666.666667, "count": 1419 },
-            { "bin_start": 66666.666667, "bin_end": 133333.333333, "count": 601 }
-          ]
+          // ── time_series only (null for regression) ──
+          "time_column": null,
+          "time_coverage": null,
+          "stationarity_hint": null,
+          "leakage_risk": null,
+          "target_confidence": null,
+          "time_dependent": null
         }
-      }, // or { "status": "all_null" }
-
-      "categorical": {
-        "Make": {
-          "unique_count": 33,
-          "top_values": [
-            { "value": "Maruti Suzuki", "count": 440, "ratio": 0.213696 },
-            { "value": "Hyundai", "count": 349, "ratio": 0.1695 }
-          ],
-          "mode": "Maruti Suzuki",
-          "mode_frequency": 440,
-          "entropy": 3.806082
-        },
-
-        "Fuel Type": {
-          "unique_count": 9,
-          "top_values": [
-            { "value": "Diesel", "count": 1049, "ratio": 0.509471 },
-            { "value": "Petrol", "count": 942, "ratio": 0.457504 }
-          ],
-          "mode": "Diesel",
-          "mode_frequency": 1049,
-          "entropy": 1.220802
-        }
-      }, // or { "status": "all_null" }
-
-      "datetime": {
-        "ListedDate": {
-          "min": "2022-01-01T00:00:00Z",
-          "max": "2023-12-31T23:59:59Z",
-          "range_days": 730,
-          "unique_count": 2059
-        }
-      }
-      // or { "status": "all_null" }
-    },
-
-    // ── bivariate (cross-column relationships) ──
-    "bivariate": {
-      "correlation_matrix": {
-        "Year": { "Year": 1, "Price": 0.3114, "Width": 0.195493 },
-        "Price": { "Year": 0.3114, "Price": 1, "Width": 0.563996 },
-        "Width": { "Year": 0.195493, "Price": 0.563996, "Width": 1 }
       },
-      // pairs of highly correlated columns
-      "high_correlations": [
-        { "column_1": "Length", "column_2": "Fuel Tank Capacity", "correlation": 0.81301, "strength": "moderate" },
-        { "column_1": "Length", "column_2": "Width", "correlation": 0.807054, "strength": "moderate" }
-      ],
-      // categorical -> numeric group stats
-      "categorical_numeric": [
-        {
-          "categorical_column": "Fuel Type",
-          "numeric_column": "Price",
-          "group_stats": [
-            { "group": "Diesel", "mean": 2101848.380362, "median": 1380000, "std": 2224040.645129, "count": 1049 },
-            { "group": "Petrol", "mean": 1322041.350318, "median": 595000, "std": 2597128.455779, "count": 942 }
-          ]
+      "dataset_overview": {
+        "row_count": 2059,
+        "column_count": 20,
+        "columns": [
+          {
+            // ── numeric column ──
+            "name": "Price",
+            "storage_type": "float64",
+            "logical_type": "numeric",
+            "nullable": false,
+            "null_count": 0,
+            "null_ratio": 0.0,
+            "non_null_count": 2059,
+            "distinct_count": 850,
+            "distinct_ratio": 0.413,
+            "complexity_score": 0.78,
+            "cardinality_level": "high",
+            "is_unique_non_nullable": false,
+            "is_categorical": false,
+            "is_potential_id_like": false,
+            "sample": ["825000", "1250000", "499000"],
+            "dominant_ratio": null,
+            "entropy": null,
+            // top_values and value_distribution are not present for numeric columns
+            "top_values": null,
+            "value_distribution": null,
+            "statistics": {
+              "min": 49000,
+              "max": 35000000,
+              "mean": 1702991.70,
+              "std": 2419880.64,
+              "cv": 1.42,
+              "variance": 5855943736787.0,
+              "range": 34951000,
+              "p25": 484999,
+              "p50": 825000,
+              "p75": 1925000,
+              "iqr": 1440001,
+              "skewness": 4.965143,
+              "skew_category": "heavy_right",
+              "kurtosis": 40.30,
+              "zero_count": 0,
+              "zero_ratio": 0.0,
+              "outlier_count": 215,
+              "outlier_ratio": 0.10442,
+              "outlier_severity_index": 0.82,
+              "distribution_shape_flags": ["right_skewed", "heavy_tailed"],
+              "histogram": [
+                {
+                  "bin_start": 49000,
+                  "bin_end": 1214033.33,
+                  "count": 1281
+                },
+                {
+                  "bin_start": 1214033.33,
+                  "bin_end": 2379066.67,
+                  "count": 350
+                }
+              ]
+            },
+            "datetime_min": null,
+            "datetime_max": null,
+            "time_granularity": null,
+            "time_coverage": null
+          },
+          {
+            "name": "Year",
+            "storage_type": "int64",
+            "logical_type": "numeric",
+            "nullable": false,
+            "null_count": 0,
+            "null_ratio": 0.0,
+            "non_null_count": 2059,
+            "distinct_count": 35,
+            "distinct_ratio": 0.017,
+            "complexity_score": 0.34,
+            "cardinality_level": "medium",
+            "is_unique_non_nullable": false,
+            "is_categorical": false,
+            "is_potential_id_like": false,
+            "sample": ["2017", "2019", "2015"],
+            "dominant_ratio": null,
+            "entropy": null,
+            "top_values": null,
+            "value_distribution": null,
+            "statistics": {
+              "min": 1988,
+              "max": 2022,
+              "mean": 2016.43,
+              "std": 3.36,
+              "cv": 0.002,
+              "variance": 11.31,
+              "range": 34,
+              "p25": 2014,
+              "p50": 2017,
+              "p75": 2019,
+              "iqr": 5,
+              "skewness": -0.84,
+              "skew_category": "mild_left",
+              "kurtosis": 2.93,
+              "zero_count": 0,
+              "zero_ratio": 0.0,
+              "outlier_count": 7,
+              "outlier_ratio": 0.0034,
+              "outlier_severity_index": 0.12,
+              "distribution_shape_flags": ["mild_left_skewed"],
+              "histogram": [
+                {
+                  "bin_start": 1988,
+                  "bin_end": 1996,
+                  "count": 8
+                },
+                {
+                  "bin_start": 1996,
+                  "bin_end": 2004,
+                  "count": 35
+                },
+                {
+                  "bin_start": 2004,
+                  "bin_end": 2012,
+                  "count": 450
+                },
+                {
+                  "bin_start": 2012,
+                  "bin_end": 2020,
+                  "count": 1559
+                },
+                {
+                  "bin_start": 2020,
+                  "bin_end": 2022,
+                  "count": 7
+                }
+              ]
+            },
+            "datetime_min": null,
+            "datetime_max": null,
+            "time_granularity": null,
+            "time_coverage": null
+          },
+          {
+            // ── categorical column ──
+            "name": "Fuel Type",
+            "storage_type": "object",
+            "logical_type": "categorical",
+            "nullable": false,
+            "null_count": 0,
+            "null_ratio": 0.0,
+            "non_null_count": 2059,
+            "distinct_count": 9,
+            "distinct_ratio": 0.004,
+            "complexity_score": 0.22,
+            "cardinality_level": "low",
+            "is_unique_non_nullable": false,
+            "is_categorical": true,
+            "is_potential_id_like": false,
+            "sample": ["Diesel", "Petrol", "CNG"],
+            "dominant_ratio": 0.51,
+            "entropy": 1.22,
+            "top_values": [
+              {
+                "value": "Diesel",
+                "count": 1049
+              },
+              {
+                "value": "Petrol",
+                "count": 942
+              }
+            ],
+            "value_distribution": [
+              {
+                "value": "Diesel",
+                "count": 1049,
+                "ratio": 0.5095
+              },
+              {
+                "value": "Petrol",
+                "count": 942,
+                "ratio": 0.4575
+              },
+              {
+                "value": "CNG",
+                "count": 45,
+                "ratio": 0.0219
+              }
+            ],
+            // statistics, datetime_* and time_coverage not applicable for categorical
+            "statistics": null,
+            "datetime_min": null,
+            "datetime_max": null,
+            "time_granularity": null,
+            "time_coverage": null
+          },
+          {
+            // ── datetime column ──
+            "name": "ListedDate",
+            "storage_type": "datetime64[ns]",
+            "logical_type": "datetime",
+            "nullable": false,
+            "null_count": 0,
+            "null_ratio": 0.0,
+            "non_null_count": 2059,
+            "distinct_count": 2059,
+            "distinct_ratio": 1.0,
+            "complexity_score": 0.9,
+            "cardinality_level": "unique",
+            "is_unique_non_nullable": true,
+            "is_categorical": false,
+            "is_potential_id_like": false,
+            "sample": ["2022-01-15", "2023-06-20"],
+            "dominant_ratio": null,
+            "entropy": null,
+            // top_values, value_distribution, statistics not applicable for datetime
+            "top_values": null,
+            "value_distribution": null,
+            "statistics": null,
+            "datetime_min": "2022-01-01T00:00:00Z",
+            "datetime_max": "2023-12-31T23:59:59Z",
+            "time_granularity": "daily",
+            "time_coverage": {
+              "start": "2022-01-01T00:00:00Z",
+              "end": "2023-12-31T23:59:59Z",
+              "range_days": 730,
+              "record_count": 2059,
+              "median_gap_hours": 24.0,
+              "missing_timestamps": 0
+            }
+          }
+        ]
+      },
+      "confidence_score": 0.82,
+      "overall_assessment": "Dataset is in good shape with minor skewness in the target and small missing value ratios in dimension columns.",
+      "analysis_plan": {
+        "run_correlation": true,
+        "run_mutual_information": true,
+        "run_temporal_profiles": true,
+        "run_categorical_profiles": true,
+        "max_pairwise_pairs": 190,
+        "univariate_depth": "full",
+        "skip_reasons": {},
+        "dataset_signals": {
+          "row_count": 2059,
+          "col_count": 20,
+          "numeric_col_count": 12,
+          "categorical_col_count": 6,
+          "datetime_col_count": 2,
+          "task_type": "regression",
+          "avg_null_ratio": 0.018,
+          "high_card_cat_ratio": 0.17,
+          "ignored_col_count": 0,
+          "leakage_col_count": 0,
+          "all_possible_pairs": 190
         }
-      ]
-    },
-
-    // ── temporal (time-series) ── None if no datetime cols)
-    "temporal": {
-      "time_columns": {
-        "ListedDate": {
-          "record_count_by_period": {
-            "monthly": [
-              { "period": "2022-01", "count": 60 },
-              { "period": "2022-02", "count": 55 },
-              { "period": "2023-12", "count": 82 }
+      },
+      "model_readiness": {
+        "leakage_risk_score": 0.05,
+        "data_quality_score": 0.88,
+        "feature_redundancy_score": 0.31,
+        "class_imbalance_flag": false,
+        "target_missing_flag": false,
+        "ready_for_modeling": true,
+        "blockers": [],
+        "warnings": [
+          {
+            "code": "HIGH_SEVERITY_ISSUES",
+            "message": "Price is heavily right-skewed; consider log transform before modeling."
+          }
+        ],
+        "score_breakdown": {
+          "leakage": {
+            "high_leakage_count": 0,
+            "moderate_leakage_count": 0,
+            "ignore_role_count": 0,
+            "n_features": 19,
+            "raw": 0.05
+          },
+          "quality": {
+            "total_missing_ratio": 0.018,
+            "duplicate_row_ratio": 0.0,
+            "constant_col_ratio": 0.0,
+            "severe_outlier_ratio": 0.10442,
+            "penalty": 0.12,
+            "severe_outlier_cols": ["Price"],
+            "constant_cols": []
+          },
+          "redundancy": {
+            "redundant_pair_count": 3,
+            "all_possible_pairs": 190,
+            "numeric_feature_count": 12,
+            "top_redundant_pairs": [
+              {
+                "col1": "Length",
+                "col2": "Width",
+                "correlation": 0.807
+              },
+              {
+                "col1": "Length",
+                "col2": "Fuel Tank Capacity",
+                "correlation": 0.813
+              }
             ]
           },
-          "trends": {
-            "Price": [
-              { "period": "2022-01-01", "mean": 850000, "sum": 51000000, "count": 60 },
-              { "period": "2022-02-01", "mean": 870000, "sum": 47850000, "count": 55 }
-            ],
-            "Kilometer": [
-              { "period": "2022-01-01", "mean": 45000, "sum": 2700000, "count": 60 }
-            ]
+          "imbalance": {
+            "class_imbalance_flag": false,
+            "imbalance_ratio": null,
+            "task_type": "regression"
+          },
+          "target": {
+            "target_column": "Price",
+            "target_null_ratio": 0.0,
+            "target_missing": false
           }
+        }
+      },
+      "self_reflection": {
+        "reasoning_trace": "The dataset covers ~2 years of used-car listings. The target (Price) is heavily right-skewed and outlier-prone. Dimension columns (Width, Engine) have small but non-trivial missingness. Three feature pairs show moderate multicollinearity around vehicle dimensions.",
+        "confidence_score": 0.82,
+        "blind_spots": [
+          {
+            "id": "BS_001",
+            "title": "Regional Price Variation",
+            "description": "City/location data is present but high-cardinality; regional price effects may be underexplored.",
+            "category": "domain_knowledge",
+            "severity": "medium",
+            "suggested_action": "Cluster locations by region or use target-encoding for the Location column."
+          }
+        ],
+        "weakly_supported_insights": [
+          {
+            "insight_reference": "insight_2",
+            "concern": "Multicollinearity claim based on three pairs only.",
+            "missing_evidence": "VIF scores not computed."
+          }
+        ],
+        "missing_domain_factors": ["regional demand index", "fuel price at listing date"],
+        "overall_assessment": "Analysis is reliable. Key risk is the skewed target and dimensional multicollinearity.",
+        "meta": {
+          "fallback_used": false,
+          "error": null
         }
       }
     },
 
-    // ── data quality diagnostics ──
-    "quality": {
+    // ── 2. data_quality ──────────────────────────────────────────────────────
+    "data_quality": {
       "total_rows": 2059,
       "total_cells": 41180,
+      "memory_usage_mb": 3.2,
       "total_missing": 745,
       "total_missing_ratio": 0.018091,
       "duplicate_row_count": 0,
-      "duplicate_row_ratio": 0,
+      "duplicate_row_ratio": 0.0,
       "missing_per_column": {
-        "Width": { "null_count": 64, "null_ratio": 0.031083 },
-        "Engine": { "null_count": 80, "null_ratio": 0.038854 }
+        "Width":  {
+          "null_count": 64,
+          "null_ratio": 0.031083
+        },
+        "Engine": {
+          "null_count": 80,
+          "null_ratio": 0.038854
+        }
       },
       "outlier_summary": {
-        "Price": { "outlier_count": 215, "outlier_ratio": 0.10442, "lower_bound": -1675002.5, "upper_bound": 4085001.5 },
-        "Width": { "outlier_count": 182, "outlier_ratio": 0.091228, "lower_bound": 1490.25, "upper_bound": 2036.25 }
+        "Price": {
+          "outlier_count": 215,
+          "outlier_ratio": 0.10442,
+          "lower_bound": -1675002.5,
+          "upper_bound": 4085001.5
+        },
+        "Width": {
+          "outlier_count": 182,
+          "outlier_ratio": 0.091228,
+          "lower_bound": 1490.25,
+          "upper_bound": 2036.25
+        }
       },
       "constant_columns": [],
-      "high_cardinality_columns": [ "Location" ]
+      "high_cardinality_columns": ["Location"],
+      "potential_id_columns": [],
+      "missing_correlation_matrix": {
+        "Width": {
+          "Engine": 0.43 },
+        "Engine": {
+          "Width": 0.43
+        }
+      },
+      "sensitive_columns": [
+        {
+          "name": "Owner Name",
+          "sensitivity": "pii"
+        }
+      ],
+      "high_leakage_columns": [],
+      "moderate_leakage_columns": [],
+      "ignore_recommended_columns": [],
+      "time_dependent_columns": ["ListedDate"]
     },
 
-    // ── LLM-generated insights ──
-    // category: distribution|correlation|outlier|missing_data|temporal|class_imbalance|multicollinearity|target_analysis|general
-    // severity: info|warning|critical
+    // ── 3. analysis_details ──────────────────────────────────────────────────
+    "analysis_details": {
+
+      "univariate": {
+        "numeric": {
+          "Price": {
+            "status": null,
+            "storage_type": "float64",
+            "nullable": false,
+            "null_count": 0,
+            "null_ratio": 0.0,
+            "non_null_count": 2059,
+            "distinct_count": 850,
+            "distinct_ratio": 0.413,
+            "cardinality_level": "high",
+            "complexity_score": 0.78,
+            "is_unique_non_nullable": false,
+            "is_categorical": false,
+            "is_potential_id_like": false,
+            "sample": ["825000", "1250000", "499000"],
+            "semantic_type": "price",
+            "semantic_description": "Vehicle listing price in INR",
+            "semantic_role": "target",
+            "sensitivity": "none",
+            "modeling_role": "target",
+            "leakage_risk": "none",
+            "business_category": "pricing",
+            "target_confidence": 0.97,
+            "time_dependent": false,
+            "mean": 1702991.70,
+            "median": 825000,
+            "std": 2419880.64,
+            "cv": 1.42,
+            "variance": 5855943736787.0,
+            "range": 34951000,
+            "min": 49000,
+            "max": 35000000,
+            "skewness": 4.965143,
+            "skew_category": "heavy_right",
+            "kurtosis": 40.30,
+            "q1": 484999,
+            "q3": 1925000,
+            "iqr": 1440001,
+            "outlier_count": 215,
+            "outlier_ratio": 0.10442,
+            "outlier_severity_index": 0.82,
+            "zero_count": 0,
+            "zero_ratio": 0.0,
+            "distribution_shape_flags": ["right_skewed", "heavy_tailed", "outliers_present"],
+            "dominant_ratio": null,
+            "entropy": null,
+            "histogram": [
+              {
+                "bin_start": 49000,
+                "bin_end": 1214033.33,
+                "count": 1281
+              },
+              {
+                "bin_start": 1214033.33,
+                "bin_end": 2379066.67,
+                "count": 350
+              },
+              {
+                "bin_start": 2379066.67,
+                "bin_end": 3544100,
+                "count": 170
+              }
+            ]
+          },
+          "Year": {
+            "status": null,
+            "storage_type": "int64",
+            "nullable": false,
+            "null_count": 0,
+            "null_ratio": 0.0,
+            "non_null_count": 2059,
+            "distinct_count": 35,
+            "distinct_ratio": 0.017,
+            "cardinality_level": "medium",
+            "complexity_score": 0.34,
+            "is_unique_non_nullable": false,
+            "is_categorical": false,
+            "is_potential_id_like": false,
+            "sample": ["2017", "2019", "2015"],
+            "semantic_type": "year",
+            "semantic_description": "Manufacturing year of the vehicle",
+            "semantic_role": "feature",
+            "sensitivity": "none",
+            "modeling_role": "feature",
+            "leakage_risk": "none",
+            "business_category": "vehicle_spec",
+            "target_confidence": 0.02,
+            "time_dependent": false,
+            "mean": 2016.43,
+            "median": 2017,
+            "std": 3.36,
+            "cv": 0.002,
+            "variance": 11.31,
+            "range": 34,
+            "min": 1988,
+            "max": 2022,
+            "skewness": -0.84,
+            "skew_category": "mild_left",
+            "kurtosis": 2.93,
+            "q1": 2014,
+            "q3": 2019,
+            "iqr": 5,
+            "outlier_count": 7,
+            "outlier_ratio": 0.0034,
+            "outlier_severity_index": 0.12,
+            "zero_count": 0,
+            "zero_ratio": 0.0,
+            "distribution_shape_flags": ["mild_left_skewed"],
+            "dominant_ratio": null,
+            "entropy": null,
+            "histogram": [
+              {
+                "bin_start": 1988,
+                "bin_end": 1996,
+                "count": 8
+              },
+              {
+                "bin_start": 1996,
+                "bin_end": 2004,
+                "count": 35
+              },
+              {
+                "bin_start": 2004,
+                "bin_end": 2012,
+                "count": 450
+              },
+              {
+                "bin_start": 2012,
+                "bin_end": 2020,
+                "count": 1559
+              },
+              {
+                "bin_start": 2020,
+                "bin_end": 2022,
+                "count": 7
+              }
+            ]
+          },
+          "Kilometer": {
+            "status": null, "storage_type": "float64", "nullable": false,
+            "null_count": 0, "null_ratio": 0.0, "non_null_count": 2059,
+            "distinct_count": 720, "distinct_ratio": 0.35, "cardinality_level": "high",
+            "complexity_score": 0.65, "is_unique_non_nullable": false,
+            "is_categorical": false, "is_potential_id_like": false,
+            "sample": ["50000", "72000", "30000"],
+            "semantic_type": "odometer", "semantic_description": "Distance driven in kilometres",
+            "semantic_role": "feature", "sensitivity": "none",
+            "modeling_role": "feature", "leakage_risk": "none",
+            "business_category": "vehicle_usage", "target_confidence": 0.01, "time_dependent": false,
+            "mean": 54224.71, "median": 50000, "std": 57361.72, "cv": 1.06,
+            "variance": 3290368100.0, "range": 2000000, "min": 0, "max": 2000000,
+            "skewness": 20.98, "skew_category": "extreme_right", "kurtosis": 669.61,
+            "q1": 29000, "q3": 72000, "iqr": 43000,
+            "outlier_count": 36, "outlier_ratio": 0.017484, "outlier_severity_index": 0.48,
+            "zero_count": 1, "zero_ratio": 0.0005,
+            "distribution_shape_flags": ["extreme_right_skewed", "outliers_present"],
+            "dominant_ratio": null, "entropy": null,
+            "histogram": [
+              { "bin_start": 0,         "bin_end": 66666.67,  "count": 1419 },
+              { "bin_start": 66666.67,  "bin_end": 133333.33, "count": 601  },
+              { "bin_start": 133333.33, "bin_end": 200000,    "count": 32   },
+              { "bin_start": 200000,    "bin_end": 2000000,   "count": 7    }
+            ]
+          }
+        },
+        "categorical": {
+          "Make": {
+            "status": null, "storage_type": "object", "nullable": false,
+            "null_count": 0, "null_ratio": 0.0, "non_null_count": 2059,
+            "distinct_count": 33, "distinct_ratio": 0.016, "cardinality_level": "medium",
+            "complexity_score": 0.45, "is_unique_non_nullable": false,
+            "is_categorical": true, "is_potential_id_like": false,
+            "sample": ["Maruti Suzuki", "Hyundai", "Honda"],
+            "semantic_type": "brand", "semantic_description": "Vehicle manufacturer / brand",
+            "semantic_role": "feature", "sensitivity": "none",
+            "modeling_role": "feature", "leakage_risk": "none",
+            "business_category": "vehicle_spec", "target_confidence": 0.03, "time_dependent": false,
+            "unique_count": 33,
+            "top_values": [
+              { "value": "Maruti Suzuki", "count": 440, "ratio": 0.213696 },
+              { "value": "Hyundai",       "count": 349, "ratio": 0.1695   }
+            ],
+            "value_distribution": [
+              { "value": "Maruti Suzuki", "count": 440, "ratio": 0.213696 },
+              { "value": "Hyundai",       "count": 349, "ratio": 0.1695   },
+              { "value": "Honda",         "count": 200, "ratio": 0.097    }
+            ],
+            "mode": "Maruti Suzuki", "mode_frequency": 440,
+            "dominant_ratio": 0.21, "entropy": 3.81
+          },
+          "Fuel Type": {
+            "status": null, "storage_type": "object", "nullable": false,
+            "null_count": 0, "null_ratio": 0.0, "non_null_count": 2059,
+            "distinct_count": 9, "distinct_ratio": 0.004, "cardinality_level": "low",
+            "complexity_score": 0.22, "is_unique_non_nullable": false,
+            "is_categorical": true, "is_potential_id_like": false,
+            "sample": ["Diesel", "Petrol"],
+            "semantic_type": "fuel_type", "semantic_description": "Type of fuel used by the vehicle",
+            "semantic_role": "feature", "sensitivity": "none",
+            "modeling_role": "feature", "leakage_risk": "none",
+            "business_category": "vehicle_spec", "target_confidence": 0.01, "time_dependent": false,
+            "unique_count": 9,
+            "top_values": [
+              { "value": "Diesel", "count": 1049, "ratio": 0.509471 },
+              { "value": "Petrol", "count": 942,  "ratio": 0.457504 }
+            ],
+            "value_distribution": [
+              { "value": "Diesel", "count": 1049, "ratio": 0.509471 },
+              { "value": "Petrol", "count": 942,  "ratio": 0.457504 },
+              { "value": "CNG",    "count": 45,   "ratio": 0.02185  }
+            ],
+            "mode": "Diesel", "mode_frequency": 1049,
+            "dominant_ratio": 0.51, "entropy": 1.22
+          }
+        },
+        "datetime": {
+          "ListedDate": {
+            "status": null, "storage_type": "datetime64[ns]", "nullable": false,
+            "null_count": 0, "null_ratio": 0.0, "non_null_count": 2059,
+            "distinct_count": 2059, "distinct_ratio": 1.0, "cardinality_level": "unique",
+            "complexity_score": 0.9, "is_unique_non_nullable": true, "is_categorical": false, "is_potential_id_like": false,
+            "sample": ["2022-01-15", "2023-06-20"],
+            "semantic_type": "listing_date", "semantic_description": "Date the vehicle was listed for sale",
+            "semantic_role": "auxiliary", "sensitivity": "none",
+            "modeling_role": "auxiliary", "leakage_risk": "none",
+            "business_category": "listing_metadata", "target_confidence": 0.0, "time_dependent": true,
+            "min": "2022-01-01T00:00:00Z", "max": "2023-12-31T23:59:59Z",
+            "range_days": 730, "unique_count": 2059, "time_granularity": "daily",
+            "time_coverage": {
+              "start": "2022-01-01T00:00:00Z", "end": "2023-12-31T23:59:59Z",
+              "range_days": 730, "record_count": 2059,
+              "median_gap_hours": 24.0, "missing_timestamps": 0
+            }
+          }
+        }
+      },
+
+      "bivariate": {
+        "correlation_matrix": {
+          "Year":  { "Year": 1.0,      "Price": 0.3114,   "Width": 0.195493 },
+          "Price": { "Year": 0.3114,   "Price": 1.0,      "Width": 0.563996 },
+          "Width": { "Year": 0.195493, "Price": 0.563996, "Width": 1.0      }
+        },
+        "high_correlations": [
+          {
+            "column_1": "Length", "column_2": "Fuel Tank Capacity",
+            "correlation": 0.81301, "strength": "moderate",
+            "col1_modeling_role": "feature", "col1_leakage_risk": "none", "col1_business_category": "vehicle_spec",
+            "col2_modeling_role": "feature", "col2_leakage_risk": "none", "col2_business_category": "vehicle_spec",
+            "involves_leaky_col": false, "involves_ignored_col": false
+          },
+          {
+            "column_1": "Length", "column_2": "Width",
+            "correlation": 0.807054, "strength": "moderate",
+            "col1_modeling_role": "feature", "col1_leakage_risk": "none", "col1_business_category": "vehicle_spec",
+            "col2_modeling_role": "feature", "col2_leakage_risk": "none", "col2_business_category": "vehicle_spec",
+            "involves_leaky_col": false, "involves_ignored_col": false
+          }
+        ],
+        "high_corr_feature_groups": [
+          { "group_id": "hcg_1", "features": ["Length", "Width", "Fuel Tank Capacity"], "max_abs_corr": 0.813, "pair_count": 2 }
+        ],
+        "categorical_numeric": [
+          {
+            "categorical_column": "Fuel Type", "numeric_column": "Price",
+            "group_stats": [
+              { "group": "Diesel", "mean": 2101848.38, "median": 1380000, "std": 2224040.65, "count": 1049 },
+              { "group": "Petrol", "mean": 1322041.35, "median": 595000,  "std": 2597128.46, "count": 942  }
+            ]
+          }
+        ],
+        "pairwise_mutual_information": {
+          "Year":  { "Price": 0.42 },
+          "Width": { "Price": 0.61 }
+        },
+        "pairwise_categorical_lift": [
+          { "col1": "Make", "col2": "Fuel Type", "max_lift": 2.3 }
+        ]
+      },
+
+      "temporal": {
+        "time_columns": {
+          "ListedDate": {
+            "record_count_by_period": {
+              "yearly": [
+                { "period": "2022", "count": 620 },
+                { "period": "2023", "count": 1439 }
+              ],
+              "quarterly": [
+                { "period": "2022-Q1", "count": 187 },
+                { "period": "2022-Q2", "count": 148 },
+                { "period": "2022-Q3", "count": 162 },
+                { "period": "2022-Q4", "count": 123 },
+                { "period": "2023-Q1", "count": 340 },
+                { "period": "2023-Q2", "count": 380 },
+                { "period": "2023-Q3", "count": 391 },
+                { "period": "2023-Q4", "count": 328 }
+              ],
+              "monthly": [
+                { "period": "2022-01", "count": 60 },
+                { "period": "2022-02", "count": 55 },
+                { "period": "2022-03", "count": 72 },
+                { "period": "2023-11", "count": 90 },
+                { "period": "2023-12", "count": 82 }
+              ],
+              "weekly": [
+                { "period": "2022-W01", "count": 14 },
+                { "period": "2022-W02", "count": 16 },
+                { "period": "2022-W03", "count": 15 },
+                { "period": "2022-W04", "count": 15 }
+              ]
+            },
+            "trends": {
+              "Price": [
+                { "period": "2022-01-01", "mean": 850000,  "sum": 51000000, "count": 60 },
+                { "period": "2022-02-01", "mean": 870000,  "sum": 47850000, "count": 55 },
+                { "period": "2023-11-01", "mean": 1100000, "sum": 99000000, "count": 90 },
+                { "period": "2023-12-01", "mean": 1050000, "sum": 86100000, "count": 82 }
+              ],
+              "Kilometer": [
+                { "period": "2022-01-01", "mean": 45000, "sum": 2700000, "count": 60 },
+                { "period": "2022-02-01", "mean": 47000, "sum": 2585000, "count": 55 }
+              ]
+            },
+            "semantic_time_dependent": true,
+            "semantic_modeling_role": "auxiliary",
+            "semantic_business_category": "listing_metadata",
+            "semantic_description": "Date the vehicle was listed for sale"
+          }
+        }
+      },
+
+      "semantic": {
+        "columns": [
+          { "name": "Price",      "type": "price",        "description": "Vehicle listing price in INR.",      "role": "target",    "sensitivity": "none", "target_confidence": 0.97, "business_category": "pricing",           "modeling_role": "target",    "leakage_risk": "none", "time_dependent": false },
+          { "name": "Year",       "type": "year",         "description": "Manufacturing year.",                "role": "feature",   "sensitivity": "none", "target_confidence": 0.02, "business_category": "vehicle_spec",      "modeling_role": "feature",   "leakage_risk": "none", "time_dependent": false },
+          { "name": "Fuel Type",  "type": "fuel_type",    "description": "Type of fuel used.",                 "role": "feature",   "sensitivity": "none", "target_confidence": 0.01, "business_category": "vehicle_spec",      "modeling_role": "feature",   "leakage_risk": "none", "time_dependent": false },
+          { "name": "ListedDate", "type": "listing_date", "description": "Date the vehicle was listed.",       "role": "auxiliary", "sensitivity": "none", "target_confidence": 0.0,  "business_category": "listing_metadata",  "modeling_role": "auxiliary", "leakage_risk": "none", "time_dependent": true  }
+        ]
+      },
+
+      "detected_issues": [
+        // type: "outliers"
+        {
+          "id": "issue_1", "type": "outliers", "severity": "high",
+          "columns": ["Price"],
+          "metric_reference": "quality.outlier_summary.Price.outlier_ratio",
+          "evidence": { "outlier_count": 215, "outlier_ratio": 0.10442, "lower_bound": -1675002.5, "upper_bound": 4085001.5 }
+        },
+        {
+          "id": "issue_2", "type": "outliers", "severity": "medium",
+          "columns": ["Width"],
+          "metric_reference": "quality.outlier_summary.Width.outlier_ratio",
+          "evidence": { "outlier_count": 182, "outlier_ratio": 0.091228, "lower_bound": 1490.25, "upper_bound": 2036.25 }
+        },
+        // type: "high_correlation" — evidence includes all 6 col1/col2 annotation fields
+        {
+          "id": "issue_3", "type": "high_correlation", "severity": "medium",
+          "columns": ["Length", "Fuel Tank Capacity"],
+          "metric_reference": "bivariate.high_correlations",
+          "evidence": {
+            "correlation": 0.81301, "strength": "moderate",
+            "involves_leaky_col": false, "involves_ignored_col": false,
+            "col1_modeling_role": "feature", "col2_modeling_role": "feature",
+            "col1_business_category": "vehicle_spec", "col2_business_category": "vehicle_spec"
+          }
+        },
+        // type: "high_cardinality"
+        {
+          "id": "issue_4", "type": "high_cardinality", "severity": "medium",
+          "columns": ["Location"],
+          "metric_reference": "quality.high_cardinality_columns",
+          "evidence": { "distinct_count": 150, "distinct_ratio": 0.073, "cardinality_level": "high" }
+        },
+        // type: "missing_data"
+        {
+          "id": "issue_5", "type": "missing_data", "severity": "low",
+          "columns": ["Width"],
+          "metric_reference": "quality.missing_per_column.Width.null_ratio",
+          "evidence": { "null_ratio": 0.031083, "null_count": 64 }
+        },
+        {
+          "id": "issue_6", "type": "missing_data", "severity": "low",
+          "columns": ["Engine"],
+          "metric_reference": "quality.missing_per_column.Engine.null_ratio",
+          "evidence": { "null_ratio": 0.038854, "null_count": 80 }
+        },
+        // type: "sensitive_column"
+        {
+          "id": "issue_7", "type": "sensitive_column", "severity": "medium",
+          "columns": ["Owner Name"],
+          "metric_reference": "quality.sensitive_columns",
+          "evidence": { "sensitivity": "pii", "modeling_role": "drop" }
+        }
+
+        // ── Additional issue types not triggered in this dataset but present in schema: ──
+        // type: "duplicate_rows"
+        // { "id": "issue_X", "type": "duplicate_rows", "severity": "high", "columns": [],
+        //   "metric_reference": "quality.duplicate_row_ratio",
+        //   "evidence": { "duplicate_row_count": 120, "duplicate_row_ratio": 0.058 } }
+
+        // type: "class_imbalance"  (classification only)
+        // { "id": "issue_X", "type": "class_imbalance", "severity": "high", "columns": ["target"],
+        //   "metric_reference": "task_metrics.imbalance_ratio",
+        //   "evidence": { "imbalance_ratio": 6.5, "num_classes": 2, "class_distribution": { "Yes": { "count": 900, "ratio": 0.87 }, "No": { "count": 138, "ratio": 0.13 } } } }
+
+        // type: "constant_column"
+        // { "id": "issue_X", "type": "constant_column", "severity": "critical", "columns": ["Status"],
+        //   "metric_reference": "quality.constant_columns",
+        //   "evidence": { "distinct_count": 1 } }
+
+        // type: "potential_id_column"
+        // { "id": "issue_X", "type": "potential_id_column", "severity": "medium", "columns": ["ListingID"],
+        //   "metric_reference": "quality.potential_id_columns",
+        //   "evidence": { "is_potential_id_like": true, "distinct_ratio": 1.0, "modeling_role": "drop" } }
+
+        // type: "data_leakage"
+        // { "id": "issue_X", "type": "data_leakage", "severity": "critical", "columns": ["FinalSalePrice"],
+        //   "metric_reference": "quality.high_leakage_columns | quality.moderate_leakage_columns",
+        //   "evidence": { "leakage_risk": "high", "description": "Recorded after sale — not available at prediction time.", "modeling_role": "drop" } }
+
+        // type: "temporal_gap"
+        // { "id": "issue_X", "type": "temporal_gap", "severity": "high", "columns": ["ListedDate"],
+        //   "metric_reference": "temporal.time_columns.ListedDate.gap_count",
+        //   "evidence": { "gap_count": 14, "gap_ratio": 0.038, "time_granularity": "daily", "min": "2022-01-01T00:00:00Z", "max": "2023-12-31T23:59:59Z" } }
+
+        // type: "zero_variance"
+        // { "id": "issue_X", "type": "zero_variance", "severity": "critical", "columns": ["Constant"],
+        //   "metric_reference": "schema.columns.Constant.statistics.variance",
+        //   "evidence": { "variance": 0.0, "mean": 1.0 } }
+      ],
+
+      "hypotheses": [
+        {
+          "id": "H_DET_001",
+          "statement": "Vehicles with higher Year values will command higher Price.",
+          "rationale": "Newer vehicles are generally listed at higher prices due to lower depreciation.",
+          "type": "relationship",
+          "columns": ["Year", "Price"],
+          "direction": "positive",
+          "expected_metric": "correlation",
+          "expected_threshold": 0.2,
+          "source": "deterministic",
+          "status": "supported",
+          "verdict": "Correlation of 0.311 confirms a moderate positive relationship between Year and Price.",
+          "evidence": {
+            "correlation": 0.3114,
+            "correlation_found": true,
+            "referenced_pair": {
+              "col1": "Year",
+              "col2": "Price",
+              "value": 0.3114
+            },
+            "null_ratio": null,
+            "null_ratio_found": null,
+            "imbalance_ratio": null,
+            "imbalance_found": null,
+            "skewness": null,
+            "kurtosis": null,
+            "outlier_ratio": null,
+            "dominant_ratio": null,
+            "outlier_count": null,
+            "distinct_ratio": null,
+            "distinct_ratio_found": null
+          }
+        },
+        {
+          "id": "H_LLM_001",
+          "statement": "Diesel vehicles will be priced higher on average than petrol vehicles.",
+          "rationale": "Diesel engines are typically larger and found in SUVs/trucks, commanding a premium.",
+          "type": "relationship",
+          "columns": ["Fuel Type", "Price"],
+          "direction": "positive",
+          "expected_metric": "other",
+          "expected_threshold": null,
+          "source": "llm",
+          "status": "supported",
+          "verdict": "Diesel mean price (₹2.1M) is 59% higher than Petrol mean (₹1.3M).",
+          "evidence": {
+            "correlation": null,
+            "correlation_found": null,
+            "referenced_pair": null,
+            "null_ratio": null,
+            "null_ratio_found": null,
+            "imbalance_ratio": null,
+            "imbalance_found": null,
+            "skewness": null,
+            "kurtosis": null,
+            "outlier_ratio": null,
+            "dominant_ratio": null,
+            "outlier_count": null,
+            "distinct_ratio": null,
+            "distinct_ratio_found": null
+          }
+        }
+      ],
+
+      "hypothesis_summary": {
+        "total": 2, "supported": 2, "refuted": 0, "insufficient_data": 0,
+        "support_rate": 1.0, "deterministic_count": 1, "llm_count": 1
+      },
+
+      "mapped_insights": [
+        {
+          "insight_id": "insight_1",
+          "issue_ids": ["issue_1"], "is_orphan": false, "match_reasons": ["column_overlap:Price"]
+        },
+        {
+          "insight_id": "insight_2",
+          "issue_ids": ["issue_3"], "is_orphan": false, "match_reasons": ["category_match:correlation→high_correlation"]
+        }
+      ],
+
+      "insight_coverage": {
+        "issue_count": 7, "insight_count": 2,
+        "addressed_issue_count": 2, "unaddressed_issue_count": 5,
+        "orphan_insight_count": 0, "grounded_insight_count": 2,
+        "coverage_ratio": 0.286,
+        "unaddressed_issue_ids": ["issue_2", "issue_4", "issue_5", "issue_6", "issue_7"]
+      }
+    },
+
+    // ── 4. insights ──────────────────────────────────────────────────────────
     "insights": [
       {
-        "id": "insight_1",
-        "category": "distribution",
-        "severity": "warning",
+        "id": "insight_1", "category": "distribution", "severity": "warning",
         "title": "Highly Skewed Price Distribution",
-        "description": "Price distribution is heavily right-skewed with extreme high-value outliers.",
-        "affected_columns": [ "Price" ],
-        "recommendation": "Apply log transform or cap extremes before modeling."
+        "description": "Price is heavily right-skewed (skewness 4.97, kurtosis 40.3). Extreme luxury listings pull the mean far above the median.",
+        "affected_columns": ["Price"],
+        "recommendation": "Apply log transform or Yeo-Johnson before modeling to normalise the target distribution."
       },
       {
-        "id": "insight_2",
-        "category": "correlation",
-        "severity": "warning",
-        "title": "Multicollinearity Among Dimensions",
-        "description": "Length, Width, and Fuel Tank Capacity show high pairwise correlations.",
-        "affected_columns": [ "Length", "Width", "Fuel Tank Capacity" ],
-        "recommendation": "Consider dimensionality reduction or feature selection."
+        "id": "insight_2", "category": "correlation", "severity": "warning",
+        "title": "Multicollinearity Among Vehicle Dimensions",
+        "description": "Length, Width, and Fuel Tank Capacity are strongly intercorrelated (r > 0.81), introducing redundancy.",
+        "affected_columns": ["Length", "Width", "Fuel Tank Capacity"],
+        "recommendation": "Use PCA on vehicle dimension features or drop the least informative one."
       }
     ],
 
-    // ── chart recommendations ──
-    // chart_type: histogram|bar|scatter|line|box|heatmap|pie|area|violin
-    // priority: high|medium|low
+    // ── 5. charts ────────────────────────────────────────────────────────────
     "charts": [
-      { "id": "chart_1", "chart_type": "histogram", "title": "Distribution of Vehicle Prices", "description": "Histogram of Price", "x_axis": "Price", "y_axis": null, "group_by": null, "priority": "high" },
-      { "id": "chart_2", "chart_type": "box", "title": "Price by Fuel Type", "description": "Box plot of Price grouped by Fuel Type", "x_axis": "Fuel Type", "y_axis": "Price", "group_by": null, "priority": "high" },
-      { "id": "chart_3", "chart_type": "scatter", "title": "Price vs Length", "description": "Scatter of Price vs Length", "x_axis": "Length", "y_axis": "Price", "group_by": null, "priority": "high" },
-      { "id": "chart_4", "chart_type": "heatmap", "title": "Correlation Matrix", "description": "Pairwise correlations", "x_axis": null, "y_axis": null, "group_by": null, "priority": "high" },
-      { "id": "chart_5", "chart_type": "bar", "title": "Count of Vehicles by Fuel Type", "description": "Counts by Fuel Type", "x_axis": "Fuel Type", "y_axis": null, "group_by": null, "priority": "medium" },
-      { "id": "chart_6", "chart_type": "line", "title": "Price Trend Over Time", "description": "Monthly average price", "x_axis": "ListedDate", "y_axis": "Price", "group_by": null, "priority": "medium" }
-    ]
+      // ── distribution charts ───────────────────────────────────────────────
+      { "id": "chart_1",  "chart_type": "histogram",       "title": "Distribution of Vehicle Prices",        "description": "Histogram of Price bins",                        "x_axis": "Price",        "y_axis": null,    "group_by": null, "priority": "high"   },
+      { "id": "chart_2",  "chart_type": "density",         "title": "Price Density Curve",                   "description": "Approximate KDE of Price distribution",         "x_axis": "Price",        "y_axis": null,    "group_by": null, "priority": "high"   },
+      { "id": "chart_3",  "chart_type": "ecdf",            "title": "Price Cumulative Distribution",         "description": "Empirical CDF of Price",                        "x_axis": "Price",        "y_axis": null,    "group_by": null, "priority": "medium" },
+      { "id": "chart_4",  "chart_type": "qq",              "title": "Price Q-Q Plot",                        "description": "Normal Q-Q plot for Price",                     "x_axis": "Price",        "y_axis": null,    "group_by": null, "priority": "medium" },
+
+      // ── box / violin / strip ──────────────────────────────────────────────
+      { "id": "chart_5",  "chart_type": "box",             "title": "Price by Fuel Type",                    "description": "Box plot of Price grouped by Fuel Type",        "x_axis": "Fuel Type",    "y_axis": "Price", "group_by": null, "priority": "high"   },
+      { "id": "chart_6",  "chart_type": "violin",          "title": "Price Distribution by Transmission",   "description": "Violin plot of Price by Transmission type",     "x_axis": "Transmission", "y_axis": "Price", "group_by": null, "priority": "medium" },
+      { "id": "chart_7",  "chart_type": "strip",           "title": "Year vs Price Strip Plot",              "description": "Strip / dot plot of Year against Price",        "x_axis": "Year",         "y_axis": "Price", "group_by": null, "priority": "low"    },
+
+      // ── categorical / count charts ────────────────────────────────────────
+      { "id": "chart_8",  "chart_type": "bar",             "title": "Count of Vehicles by Fuel Type",       "description": "Counts per Fuel Type category",                 "x_axis": "Fuel Type",    "y_axis": null,    "group_by": null, "priority": "medium" },
+      { "id": "chart_9",  "chart_type": "pie",             "title": "Fuel Type Share",                      "description": "Proportion of listings by Fuel Type",           "x_axis": "Fuel Type",    "y_axis": null,    "group_by": null, "priority": "medium" },
+      { "id": "chart_10", "chart_type": "treemap",         "title": "Listing Share by Fuel Type",           "description": "Treemap of listing counts by Fuel Type",        "x_axis": "Fuel Type",    "y_axis": null,    "group_by": null, "priority": "low"    },
+
+      // ── bivariate / relational charts ─────────────────────────────────────
+      { "id": "chart_11", "chart_type": "scatter",         "title": "Price vs Length",                      "description": "Scatter of Price vs Length",                    "x_axis": "Length",       "y_axis": "Price", "group_by": null, "priority": "high"   },
+      { "id": "chart_12", "chart_type": "bubble",          "title": "Price vs Width (bubble)",              "description": "Bubble chart of Price vs Width",                "x_axis": "Width",        "y_axis": "Price", "group_by": null, "priority": "low"    },
+      { "id": "chart_13", "chart_type": "pair",            "title": "Pairwise Feature Scatter Matrix",      "description": "Grid of scatter plots for numeric features",    "x_axis": null,           "y_axis": null,    "group_by": null, "priority": "low"    },
+
+      // ── correlation charts ────────────────────────────────────────────────
+      { "id": "chart_14", "chart_type": "heatmap",         "title": "Correlation Matrix",                   "description": "Pairwise Pearson correlations",                 "x_axis": null,           "y_axis": null,    "group_by": null, "priority": "high"   },
+      { "id": "chart_15", "chart_type": "correlation_bar", "title": "Feature-Target Correlations",          "description": "Bar chart of |r| between features and Price",   "x_axis": null,           "y_axis": "Price", "group_by": null, "priority": "high"   },
+
+      // ── temporal charts ───────────────────────────────────────────────────
+      { "id": "chart_16", "chart_type": "line",            "title": "Average Price Trend Over Time",        "description": "Monthly mean Price over ListedDate",            "x_axis": "ListedDate",   "y_axis": "Price", "group_by": null, "priority": "medium" },
+      { "id": "chart_17", "chart_type": "area",            "title": "Listing Volume Over Time",             "description": "Monthly count of listings",                     "x_axis": "ListedDate",   "y_axis": "Price", "group_by": null, "priority": "medium" },
+
+      // ── data quality charts ───────────────────────────────────────────────
+      { "id": "chart_18", "chart_type": "missingness",     "title": "Missing Value Rates by Column",        "description": "Null ratio per column, sorted descending",      "x_axis": null,           "y_axis": null,    "group_by": null, "priority": "high"   }
+    ],
+
+    // ── 6. meta ──────────────────────────────────────────────────────────────
+    "meta": {
+      "validation_errors": null,
+      "repair_attempted": false
+    }
+
   }
 }
-
-

@@ -92,18 +92,20 @@ const EdaResult = ({ navigate }) => {
         );
     }
 
-    // Ensure we pass a safe object to child components and compute counts without throwing if fields are missing or of unexpected types.
+    // Ensure we pass a safe object to child components.
     const safeResult = (resultJson && typeof resultJson === 'object') ? resultJson : {};
-    const insightsCount = Array.isArray(safeResult.insights) ? safeResult.insights.length : (safeResult.insights && typeof safeResult.insights === 'object' ? 1 : 0);
-    const chartsCount = Array.isArray(safeResult.charts) ? safeResult.charts.length : (safeResult.charts && typeof safeResult.charts === 'object' ? 1 : 0);
+
+    //schema: result.summary, result.data_quality, result.analysis_details, result.insights, result.charts, result.meta
+    const insightsCount = Array.isArray(safeResult.insights) ? safeResult.insights.length : 0;
+    const chartsCount = Array.isArray(safeResult.charts) ? safeResult.charts.length : 0;
 
     const sections = [
-        { key: 'summary', label: 'Summary' },
-        { key: 'quality', label: 'Data Quality' },
-        { key: 'analysis', label: 'Analysis Details' },
-        { key: 'charts', label: `Charts${chartsCount ? ` (${chartsCount})` : ''}` },
+        { key: 'summary',  label: 'Summary' },
+        { key: 'quality',  label: 'Data Quality' },
+        { key: 'analysis', label: 'Analysis' },
         { key: 'insights', label: `Insights${insightsCount ? ` (${insightsCount})` : ''}` },
-        { key: 'raw', label: 'Raw JSON' },
+        { key: 'charts',   label: `Charts${chartsCount ? ` (${chartsCount})` : ''}` },
+        { key: 'raw',      label: 'Raw JSON' },
     ];
 
     return (
@@ -133,19 +135,24 @@ const EdaResult = ({ navigate }) => {
 
             <div className="eda-result-content">
                 {activeSection === 'summary' && (
-                    <EdaSummary resultJson={safeResult} />
+                    <EdaSummary summary={safeResult.summary} />
                 )}
                 {activeSection === 'quality' && (
-                    <EdaQuality quality={safeResult.quality} />
+                    <EdaQuality quality={safeResult.data_quality} />
                 )}
                 {activeSection === 'analysis' && (
-                    <EdaAnalysis resultJson={safeResult} />
-                )}
-                {activeSection === 'charts' && (
-                    <EdaCharts charts={safeResult.charts} resultJson={safeResult} />
+                    <EdaAnalysis analysisDetails={safeResult.analysis_details} />
                 )}
                 {activeSection === 'insights' && (
                     <EdaInsights insights={safeResult.insights} />
+                )}
+                {activeSection === 'charts' && (
+                    <EdaCharts
+                        charts={safeResult.charts}
+                        analysisDetails={safeResult.analysis_details}
+                        summary={safeResult.summary}
+                        dataQuality={safeResult.data_quality}
+                    />
                 )}
                 {activeSection === 'raw' && (
                     <div className="eda-section">

@@ -171,7 +171,17 @@ const BoxPlotRenderer = ({ data }) => {
 const ChartRenderer = ({ mapped }) => {
     // Defensive defaults for mapped object to avoid crashes when mapper returns unexpected shapes
     const safe = mapped && typeof mapped === 'object' ? mapped : {};
-    const { chartType = 'bar', data = [], description = '', xAxis, yAxis, columns = [], series = [] } = safe;
+    const { chartType = 'bar', data = [], description = '', xAxis, yAxis, columns = [], series = [], isPairPlot = false } = safe;
+
+    // pair plot — no single chart possible
+    if (isPairPlot) {
+        return (
+            <div className="eda-chart-empty">
+                <p>Pair plot requires a grid of scatter plots.</p>
+                <p className="eda-chart-unsupported-msg">This chart type is not supported in the inline renderer.</p>
+            </div>
+        );
+    }
 
     if (!Array.isArray(data) || data.length === 0) {
         return (
@@ -183,75 +193,114 @@ const ChartRenderer = ({ mapped }) => {
     }
 
     const commonProps = { width: '100%', height: 300 };
+    const gridStroke = 'rgba(255,255,255,0.1)';
 
     switch (chartType) {
+
+        // Bar / Histogram / Treemap / Missingness / Correlation Bar
         case 'histogram':
         case 'bar':
+        case 'treemap':
+        case 'missingness':
+        case 'correlation_bar':
             return (
                 <ResponsiveContainer {...commonProps}>
-                    <BarChart data={data} margin={{ top: 10, right: 20, left: 0, bottom: 5 }}>
-                        <CartesianGrid strokeDasharray="3 3" stroke="rgba(255,255,255,0.1)" />
-                        <XAxis dataKey="name" angle={-30} textAnchor="end" height={60} />
+                    <BarChart data={data} margin={{ top: 10, right: 20, left: 0, bottom: 60 }}>
+                        <CartesianGrid strokeDasharray="3 3" stroke={gridStroke} />
+                        <XAxis dataKey="name" angle={-35} textAnchor="end" interval={0} tick={{ fontSize: 11 }} />
                         <YAxis />
                         <Tooltip />
-                        <Bar dataKey="value" className="eda-bar" fill={COLORS[0]} />
+                        <Bar dataKey="value" fill={COLORS[0]} radius={[3,3,0,0]} />
                     </BarChart>
                 </ResponsiveContainer>
             );
 
-        case 'scatter':
+        // Density / ECDF
+        case 'density':
+        case 'ecdf':
             return (
                 <ResponsiveContainer {...commonProps}>
-                    <ScatterChart margin={{ top: 10, right: 20, left: 0, bottom: 5 }}>
-                        <CartesianGrid strokeDasharray="3 3" stroke="rgba(255,255,255,0.1)" />
-                        <XAxis dataKey="x" name={xAxis || 'X'} />
-                        <YAxis dataKey="y" name={yAxis || 'Y'} />
-                        <Tooltip />
-                        <Scatter data={data} className="eda-scatter" fill={COLORS[1]} />
-                    </ScatterChart>
+                    <AreaChart data={data} margin={{ top: 10, right: 20, left: 0, bottom: 60 }}>
+                        <CartesianGrid strokeDasharray="3 3" stroke={gridStroke} />
+                        <XAxis dataKey="name" angle={-35} textAnchor="end" interval={0} tick={{ fontSize: 11 }} />
+                        <YAxis domain={chartType === 'ecdf' ? [0, 1] : ['auto', 'auto']} tickFormatter={v => chartType === 'ecdf' ? `${(v*100).toFixed(0)}%` : v} />
+                        <Tooltip formatter={v => chartType === 'ecdf' ? `${(v*100).toFixed(1)}%` : v} />
+                        <Area type="monotone" dataKey="value" stroke={COLORS[0]} fill={COLORS[0]} fillOpacity={0.2} dot={false} />
+                    </AreaChart>
                 </ResponsiveContainer>
             );
 
-        case 'line':
+        // QQ / Scatter / Strip / Bubble
+        case 'qq':
+        case 'scatter':
+        case 'strip':
+        case 'bubble': {
             return (
                 <ResponsiveContainer {...commonProps}>
-                    <LineChart data={data} margin={{ top: 10, right: 20, left: 0, bottom: 5 }}>
-                        <CartesianGrid strokeDasharray="3 3" stroke="rgba(255,255,255,0.1)" />
-                        <XAxis dataKey="name" />
+                    <ScatterChart margin={{ top: 10, right: 20, left: 0, bottom: 10 }}>
+                        <CartesianGrid strokeDasharray="3 3" stroke={gridStroke} />
+                        <XAxis dataKey="x" name={chartType === 'qq' ? 'Theoretical' : (xAxis || 'X')} type="number" tick={{ fontSize: 11 }} />
+                        <YAxis dataKey="y" name={chartType === 'qq' ? 'Sample' : (yAxis || 'Y')} tick={{ fontSize: 11 }} />
+                        <Tooltip cursor={{ strokeDasharray: '3 3' }} />
+                        {chartType === 'qq' && (() => {
+                            const xs = data.map(d => d.x).filter(Number.isFinite);
+                            const ys = data.map(d => d.y).filter(Number.isFinite);
+                            if (xs.length < 2) return null;
+                            const refData = [{ x: Math.min(...xs), y: Math.min(...ys) }, { x: Math.max(...xs), y: Math.max(...ys) }];
+                            return <Scatter data={refData} fill="rgba(255,255,255,0.2)" line={{ stroke: '#a5b4fc', strokeDasharray: '4 4' }} shape={() => null} />;
+                        })()}
+                        <Scatter data={data} fill={COLORS[1]} fillOpacity={0.75} />
+                    </ScatterChart>
+                </ResponsiveContainer>
+            );
+        }
+
+        // Line
+        case 'line': {
+            const lineSeries = Array.isArray(series) && series.length > 0 ? series : ['value'];
+            return (
+                <ResponsiveContainer {...commonProps}>
+                    <LineChart data={data} margin={{ top: 10, right: 20, left: 0, bottom: 10 }}>
+                        <CartesianGrid strokeDasharray="3 3" stroke={gridStroke} />
+                        <XAxis dataKey="name" tick={{ fontSize: 11 }} />
                         <YAxis />
                         <Tooltip />
                         <Legend />
-                        {(Array.isArray(series) && series.length > 0 ? series : ['value']).map((s, idx) => (
-                            <Line key={s} type="monotone" dataKey={s} stroke={COLORS[idx % COLORS.length]} strokeWidth={2} dot={{ fill: COLORS[idx % COLORS.length] }} />
+                        {lineSeries.map((s, idx) => (
+                            <Line key={s} type="monotone" dataKey={s} stroke={COLORS[idx % COLORS.length]} strokeWidth={2} dot={false} />
                         ))}
                     </LineChart>
                 </ResponsiveContainer>
             );
+        }
 
+        // Area
         case 'area': {
-            const areaSeries = (Array.isArray(series) && series.length > 0) ? series : ['value'];
+            const areaSeries = Array.isArray(series) && series.length > 0 ? series : ['value'];
             return (
                 <ResponsiveContainer {...commonProps}>
-                    <AreaChart data={data} margin={{ top: 10, right: 20, left: 0, bottom: 5 }}>
-                        <CartesianGrid strokeDasharray="3 3" stroke="rgba(255,255,255,0.1)" />
-                        <XAxis dataKey="name" />
+                    <AreaChart data={data} margin={{ top: 10, right: 20, left: 0, bottom: 10 }}>
+                        <CartesianGrid strokeDasharray="3 3" stroke={gridStroke} />
+                        <XAxis dataKey="name" tick={{ fontSize: 11 }} />
                         <YAxis />
                         <Tooltip />
                         <Legend />
                         {areaSeries.map((s, idx) => (
-                            <Area key={s} type="monotone" dataKey={s} stroke={COLORS[idx % COLORS.length]} fill={COLORS[idx % COLORS.length]} fillOpacity={0.18} />
+                            <Area key={s} type="monotone" dataKey={s} stroke={COLORS[idx % COLORS.length]} fill={COLORS[idx % COLORS.length]} fillOpacity={0.15} dot={false} />
                         ))}
                     </AreaChart>
                 </ResponsiveContainer>
             );
         }
 
+        // Pie
         case 'pie': {
             const pieData = data.map((d, idx) => ({ ...d, fill: COLORS[idx % COLORS.length] }));
             return (
                 <ResponsiveContainer {...commonProps}>
                     <PieChart>
-                        <Pie data={pieData} dataKey="value" nameKey="name" cx="50%" cy="50%" outerRadius={100} label={({ name, percent }) => `${name} (${(percent * 100).toFixed(0)}%)`} />
+                        <Pie data={pieData} dataKey="value" nameKey="name" cx="50%" cy="50%" outerRadius={100}
+                            label={({ name, percent }) => `${name} (${(percent * 100).toFixed(0)}%)`} />
                         <Tooltip />
                         <Legend />
                     </PieChart>
@@ -259,43 +308,40 @@ const ChartRenderer = ({ mapped }) => {
             );
         }
 
+        // Box / Violin
         case 'box':
         case 'violin':
-            if (Array.isArray(data) && data.length > 0 && typeof data[0] === 'object' && (data[0].q1 !== undefined || data[0].median !== undefined)) {
+            if (data.length > 0 && (data[0].q1 !== undefined || data[0].median !== undefined)) {
                 return <div className="eda-boxplot-wrapper"><BoxPlotRenderer data={data} /></div>;
             }
 
             // Fallback to bar/table rendering when structured stats are not available
             return (
                 <ResponsiveContainer {...commonProps}>
-                    <BarChart data={data} margin={{ top: 10, right: 20, left: 0, bottom: 5 }}>
-                        <CartesianGrid strokeDasharray="3 3" stroke="rgba(255,255,255,0.1)" />
-                        <XAxis dataKey="name" angle={-30} textAnchor="end" height={60} />
+                    <BarChart data={data} margin={{ top: 10, right: 20, left: 0, bottom: 60 }}>
+                        <CartesianGrid strokeDasharray="3 3" stroke={gridStroke} />
+                        <XAxis dataKey="name" angle={-35} textAnchor="end" height={60} />
                         <YAxis />
-                        <Tooltip formatter={(val, _name, props) => {
-                            const { payload } = props;
-                            const lines = [`Median: ${val?.toLocaleString()}`];
-                            if (payload.mean !== undefined) lines.push(`Mean: ${payload.mean?.toLocaleString()}`);
-                            if (payload.count !== undefined) lines.push(`Count: ${payload.count?.toLocaleString()}`);
-                            return [lines.join(' | '), payload.name];
-                        }} />
-                        <Bar dataKey="value" className="eda-bar-alt" fill={COLORS[2]} />
+                        <Tooltip />
+                        <Bar dataKey="value" fill={COLORS[2]} radius={[3,3,0,0]} />
                     </BarChart>
                 </ResponsiveContainer>
             );
 
+        // Heatmap
         case 'heatmap':
             return <HeatmapGrid data={data} columns={columns} />;
 
+        // Default fallback
         default:
             return (
                 <ResponsiveContainer {...commonProps}>
-                    <BarChart data={data} margin={{ top: 10, right: 20, left: 0, bottom: 5 }}>
-                        <CartesianGrid strokeDasharray="3 3" stroke="rgba(255,255,255,0.1)" />
-                        <XAxis dataKey="name" />
+                    <BarChart data={data} margin={{ top: 10, right: 20, left: 0, bottom: 60 }}>
+                        <CartesianGrid strokeDasharray="3 3" stroke={gridStroke} />
+                        <XAxis dataKey="name" angle={-35} textAnchor="end" interval={0} tick={{ fontSize: 11 }} />
                         <YAxis />
                         <Tooltip />
-                        <Bar dataKey="value" className="eda-bar" fill={COLORS[0]} />
+                        <Bar dataKey="value" fill={COLORS[0]} radius={[3,3,0,0]} />
                     </BarChart>
                 </ResponsiveContainer>
             );
@@ -379,7 +425,17 @@ const HeatmapGrid = ({ data, columns }) => {
 
 const PRIORITY_ORDER = { high: 0, medium: 1, low: 2 };
 
-const EdaCharts = ({ charts, resultJson }) => {
+const EdaCharts = ({ charts, analysisDetails, summary, dataQuality }) => {
+    // Build mapper context from own props — no cross-component data passing needed
+    const ad = analysisDetails || {};
+    const mapperContext = {
+        univariate:   ad.univariate   || {},
+        bivariate:    ad.bivariate    || {},
+        temporal:     ad.temporal     || {},
+        task_metrics: summary?.task?.task_metrics || {},
+        data_quality: dataQuality || {},
+    };
+
     // Normalize charts to an array and filter out falsy/malformed entries before sorting/mapping
     const safeCharts = Array.isArray(charts) ? charts.filter(Boolean) : [];
 
@@ -402,16 +458,21 @@ const EdaCharts = ({ charts, resultJson }) => {
             <div className="eda-charts-grid">
                 {sorted.map((chartSpec, idx) => {
                     const mapped = (() => {
-                        try { return mapChartData(resultJson || {}, chartSpec || {}); } catch (e) { console.warn('mapChartData error', e); return { chartType: chartSpec?.chart_type || 'bar', data: [], columns: [] }; }
+                        try { return mapChartData(mapperContext, chartSpec || {}); } catch (e) { console.warn('mapChartData error', e); return { chartType: chartSpec?.chart_type || 'bar', data: [], columns: [] }; }
                     })();
                     const cardKey = chartSpec?.id ?? chartSpec?.title ?? `chart-${idx}`;
                     return (
                         <div key={cardKey} className={`eda-chart-card priority-${chartSpec?.priority || 'medium'}`}>
                             <div className="eda-chart-header">
                                 <h4>{chartSpec?.title || 'Chart'}</h4>
-                                <span className={`eda-priority-badge priority-${chartSpec?.priority || 'medium'}`}>
-                                    {chartSpec?.priority || 'medium'}
-                                </span>
+                                <div className="eda-chart-header-actions">
+                                    {chartSpec?.id && (
+                                        <span className="eda-column-tag eda-column-tag-meta">{chartSpec.id}</span>
+                                    )}
+                                    <span className={`eda-priority-badge priority-${chartSpec?.priority || 'medium'}`}>
+                                        {chartSpec?.priority || 'medium'}
+                                    </span>
+                                </div>
                             </div>
                             {chartSpec?.description && (
                                 <p className="eda-chart-desc">{chartSpec.description}</p>
