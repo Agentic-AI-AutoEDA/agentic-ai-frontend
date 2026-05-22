@@ -6,6 +6,11 @@
     width: 100%;
 }
 
+.input-field {
+    position: relative;
+    width: 100%;
+}
+
 /* Scoped label for the Input component */
 .input-wrapper .form-label,
 .input-wrapper label,
@@ -20,6 +25,7 @@ div label {
 .input-wrapper input {
     width: 100%;
     padding: 12px 16px;
+    padding-right: 48px;
     font-size: 15px;
     border: 1px solid rgba(255, 255, 255, 0.08);
     border-radius: var(--radius-md);
@@ -60,7 +66,7 @@ input.error:focus {
 
 .eye-icon {
     position: absolute;
-    right: 4px;
+    right: 8px;
     top: 50%;
     transform: translateY(-50%);
     height: 32px;
@@ -68,7 +74,6 @@ input.error:focus {
     display: flex;
     align-items: center;
     justify-content: center;
-    margin-top: 16px;
     cursor: pointer;
     color: #d1d5db;
     z-index: 2;

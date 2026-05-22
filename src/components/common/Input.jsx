@@ -43,22 +43,24 @@ const Input = ({
     return (
         <div className="input-wrapper">
             {label && <label className="form-label" htmlFor={id}>{label}</label>}
-            <input
-                id={id}
-                type={isPassword && showPassword ? 'text' : type}
-                value={value}
-                onChange={onChange}
-                placeholder={placeholder}
-                className={`form-input ${error ? 'error' : ''} ${className}`}
-                autoComplete={isPassword ? 'current-password' : undefined}
-                {...rest}
-            />
-            {isPassword && (
-                <EyeIcon
-                    visible={showPassword}
-                    onClick={() => setShowPassword(v => !v)}
+            <div className="input-field">
+                <input
+                    id={id}
+                    type={isPassword && showPassword ? 'text' : type}
+                    value={value}
+                    onChange={onChange}
+                    placeholder={placeholder}
+                    className={`form-input ${error ? 'error' : ''} ${className}`}
+                    autoComplete={isPassword ? 'current-password' : undefined}
+                    {...rest}
                 />
-            )}
+                {isPassword && (
+                    <EyeIcon
+                        visible={showPassword}
+                        onClick={() => setShowPassword(v => !v)}
+                    />
+                )}
+            </div>
             {error && <span className="field-error">{error}</span>}
         </div>
     );
