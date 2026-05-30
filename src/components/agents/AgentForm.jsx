@@ -9,7 +9,6 @@ const AgentForm = ({ navigate, mode }) => {
     const { agentId } = useParams();
     const [formData, setFormData] = useState({
         name: '',
-        backstory: '',
         data_source: ''
     });
     const [files, setFiles] = useState([]);
@@ -44,7 +43,6 @@ const AgentForm = ({ navigate, mode }) => {
             const agentData = response.data.data;
             setFormData({
                 name: agentData.name || '',
-                backstory: agentData.backstory || '',
                 data_source_name: agentData.data_source_name || ''
             });
         } catch (err) {
@@ -84,7 +82,6 @@ const AgentForm = ({ navigate, mode }) => {
         try {
             const payload = {
                 name: formData.name.trim(),
-                backstory: formData.backstory.trim(),
                 data_source: formData.data_source
             };
 
@@ -149,23 +146,6 @@ const AgentForm = ({ navigate, mode }) => {
                         error={error?.name}
                     />
 
-                    <div className="input-wrapper">
-                        <label className="form-label" htmlFor="backstory">
-                            Backstory
-                        </label>
-                        <textarea
-                            id="backstory"
-                            name="backstory"
-                            value={formData.backstory}
-                            onChange={handleChange}
-                            placeholder="Enter agent backstory (optional)"
-                            className={`form-textarea ${error?.backstory ? 'error' : ''}`}
-                            rows="4"
-                        />
-                        {error?.backstory && (
-                            <span className="field-error">{Array.isArray(error.backstory) ? error.backstory[0] : error.backstory}</span>
-                        )}
-                    </div>
 
                     <div className="input-wrapper">
                         {isEditMode ? (
